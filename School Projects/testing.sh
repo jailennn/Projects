@@ -3,7 +3,7 @@ roll_dice() {
     echo $(( ( RANDOM % 6 ) + 1 ))
 }
 
-# Function to get the number of dice to roll with validation
+# Function to get the number of dice to roll with validations
 get_num_dice() {
     while true; do
         echo "How many dice do you want to roll? (1-5)"

@@ -19,7 +19,7 @@ get_valid_integer() {
 
         # Check if the input is a single digit between 1 and 5
         if [[ "$user_input" =~ ^[1-5]$ ]]; then
-            # Valid input; return the value
+            # Valid input; return the value and exit the function
             echo "$user_input"
             return
         else
@@ -31,8 +31,11 @@ get_valid_integer() {
 
 # Main function
 main() {
-    # Get the number of dice to roll
-    num_dice=$(get_valid_integer "Enter the number of dice to roll (1-5): ")
+    # Get the number of dice to roll; ensures only valid input is saved
+    num_dice=""
+    while [ -z "$num_dice" ]; do
+        num_dice=$(get_valid_integer "Enter the number of dice to roll (1-5): ")
+    done
 
     # Roll the dice and display the results
     echo "Rolling $num_dice dice: "

@@ -1,47 +1,29 @@
 #!/bin/bash
-# Function to roll dice
 roll_dice() {
-    local num_dice=$1
-    results=()
-    for ((i=0; i<num_dice; i++)); do
-        results+=($((RANDOM % 6 + 1)))
-    done
-    echo "${results[@]}"
+    echo $(( ( RANDOM % 6 ) + 1 ))
 }
 
-# Function to get a valid integer input from the user
-get_valid_integer() {
-    local prompt=$1
-    local user_input
+# Function to get the number of dice to roll with validation
+get_num_dice() {
     while true; do
-        # Prompt the user for input
-        read -p "$prompt" user_input
-
-        # Check if the input is a single digit between 1 and 5
-        if [[ "$user_input" =~ ^[1-5]$ ]]; then
-            # Valid input; return the value and exit the function
-            echo "$user_input"
-            return
+        echo "How many dice do you want to roll? (1-5)"
+        read num_dice
+        if [[ "$num_dice" =~ ^[1-5]$ ]]; then
+            break
         else
-            # Invalid input; show an error message and prompt again
             echo "Invalid input. Please enter an integer between 1 and 5."
         fi
     done
 }
 
-# Main function
-main() {
-    # Get the number of dice to roll; ensures only valid input is saved
-    num_dice=""
-    while [ -z "$num_dice" ]; do
-        num_dice=$(get_valid_integer "Enter the number of dice to roll (1-5): ")
-    done
+# Get the number of dice to roll
+get_num_dice
 
-    # Roll the dice and display the results
-    echo "Rolling $num_dice dice: "
-    results=$(roll_dice $num_dice)
-    echo $results
-}
+# Roll the dice and store the results in an array
+results=()
+for (( i=0; i<$num_dice; i++ )); do
+    results+=($(roll_dice))
+done
 
-# Run the main function
-main
+# Print the results
+echo "You rolled: ${results[@]}"

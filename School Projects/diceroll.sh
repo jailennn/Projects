@@ -1,9 +1,10 @@
 #!/bin/bash
+# "Client Program"
 roll_dice() {
     echo $(( ( RANDOM % 6 ) + 1 ))
 }
 
-# Function to get the number of dice to roll with validations
+# function to get user input for # of dice, also checking that the input is an integer 1-5.
 get_num_dice() {
     while true; do
         echo "How many dice do you want to roll? (1-5)"
@@ -16,14 +17,14 @@ get_num_dice() {
     done
 }
 
-# Get the number of dice to roll
+#call to get number of dice prior to rolling
 get_num_dice
 
-# Roll the dice and store the results in an array
+# generate the random value(roll the dice) and add each rolled value to resuilts
 results=()
 for (( i=0; i<$num_dice; i++ )); do
     results+=($(roll_dice))
 done
 
-# Print the results
+# Print the results(rolled values)
 echo "You rolled: ${results[@]}"

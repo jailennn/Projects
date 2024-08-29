@@ -8,10 +8,12 @@ roll_dice() {
     done
     echo "${results[@]}"
 }
+
 # Function to get a valid integer input from the user
 get_valid_integer() {
     local prompt=$1
     local user_input
+    while true; do
         # Prompt the user for input
         read -p "$prompt" user_input
 
@@ -24,12 +26,14 @@ get_valid_integer() {
             # Invalid input; show an error message and prompt again
             echo "Invalid input. Please enter an integer between 1 and 5."
         fi
+    done
 }
 
 # Main function
 main() {
     # Get the number of dice to roll
     num_dice=$(get_valid_integer "Enter the number of dice to roll (1-5): ")
+
     # Roll the dice and display the results
     echo "Rolling $num_dice dice: "
     results=$(roll_dice $num_dice)

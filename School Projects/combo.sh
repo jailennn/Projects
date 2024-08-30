@@ -53,7 +53,7 @@ get_num_dice
 # add each rolled value to results
 results=()
 for (( i=0; i<$num_dice; i++ )); do
-    results+=($(roll_dice))
+    results+=($(roll_dice 1))
 done
 
 # print value of each result

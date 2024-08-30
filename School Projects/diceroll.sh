@@ -1,6 +1,6 @@
 #!/bin/bash
 # "Client Program"
-#function for generating a random integer ranging from 1-6
+#function for generating a random integer ranging from 1-6(rolling a dice)
 roll_dice() {
     echo $(( ( RANDOM % 6 ) + 1 ))
 }

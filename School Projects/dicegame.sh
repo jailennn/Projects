@@ -60,17 +60,18 @@ calculate_entropy() { # calculate entropy(only if test trials are run)
 
     # probability calculation
     for num in "${!tally[@]}"; do
-        probabilities[$num]=$(echo "${tally[$num]} / $trials" | bc -l)
+        probabilities[$num]=$(echo "scale=10; ${tally[$num]} / $trials" | bc -l)
     done
 
     # entropy calculation
     for prob in "${probabilities[@]}"; do
         if (( $(echo "$prob > 0" | bc -l) )); then
-            entropy=$(echo "$entropy - $prob * l($prob)/l(2)" | bc -l)
+            entropy=$(echo "scale=10; $entropy - $prob * l($prob)/l(2)" | bc -l)
         fi
     done
+    round_num=$(printf "%.2f" "$entropy")
     sleep 1
-    echo "Entropy value: $entropy"
+    echo "Entropy value: $round_num"
 }
 # driver section
 while true; do

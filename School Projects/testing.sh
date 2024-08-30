@@ -25,9 +25,9 @@ run_trials() {
     done
 }
 
-# specify Number of trials to run
+# specify number of trials to run for test 1
 num_trials=60 
 
-# Run the trials
+# run trails
 echo "Starting Test 1..."
 run_trials $num_trials

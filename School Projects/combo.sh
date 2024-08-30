@@ -3,7 +3,12 @@
 
 # Function for generating a random integer ranging from 1-6 (rolling a dice)
 roll_dice() {
-    echo $(( ( RANDOM % 6 ) + 1 ))
+    local num_dice=$1
+    results=()
+    for ((i=0; i<num_dice; i++)); do
+        results+=($(( ( RANDOM % 6 ) + 1 )))
+    done
+    echo "${results[@]}"
 }
 
 # Function to get user input for # of dice, also checking that the input is an integer 1-5.

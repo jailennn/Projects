@@ -94,7 +94,7 @@ while true; do
                             run_trials $num_trials
                             num_trials=600 #test 2 set at 600 trails
                             echo "Starting Test 2 with $num_trials trials..."
-                            run_trails $num_trails
+                            run_trials $num_trails
                             num_trials=6000 # test 3 set at 6000 trials
                             echo "Starting Test 3 with $num_trials trials..."
                             run_trials $num_trials

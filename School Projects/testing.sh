@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # source the dice_roller.sh file to use the roll_dice function
-source ./dice_roller.sh
+source ./diceroll.sh
 
 # function to run trials and tally results
 run_trials() {

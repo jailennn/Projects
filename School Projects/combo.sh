@@ -48,7 +48,7 @@ run_trials() {
 
     # display tally results
     echo "Tally of rolled numbers after $trials trials:"
-    sleep 2
+    sleep 1
     for num in "${!tally[@]}"; do
         echo "$num: ${tally[$num]}"
     done
@@ -69,7 +69,7 @@ calculate_entropy() { # calculate entropy(only if test trials are run)
             entropy=$(echo "$entropy - $prob * l($prob)/l(2)" | bc -l)
         fi
     done
-    sleep 2
+    sleep 1
     echo "Entropy value: $entropy"
 }
 # driver section

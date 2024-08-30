@@ -14,7 +14,7 @@ get_num_dice() {
 }
 # function for generating a random integer ranging from 1-6 (rolling a dice)
 roll_dice() {
-    local num_dice=$1
+    num_dice=$1
     results=()
     for ((i=0; i<num_dice; i++)); do
         results+=($(( ( RANDOM % 6 ) + 1 )))
@@ -33,7 +33,7 @@ start_game() { # function to begin playing game
 }
 # function to run trials and tally results(testing part of code)
 run_trials() {
-    local trials=$1
+    trials=$1
     declare -A tally # associative array declaration
 
     for ((i=0; i<$trials; i++)); do
@@ -54,8 +54,8 @@ run_trials() {
     calculate_entropy
 }
 calculate_entropy() { # calculate entropy(only if test trials are run)
-    local -A probabilities
-    local entropy=0
+    declare -A probabilities
+    entropy=0
 
     # probability calculation
     for num in "${!tally[@]}"; do

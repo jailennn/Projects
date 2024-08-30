@@ -70,7 +70,7 @@ while true; do
             break
             ;;
         [Nn] )
-            echo "Exiting script."
+            echo "Thanks for playing!"
             exit 0
             ;;
         * )

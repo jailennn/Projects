@@ -69,7 +69,7 @@ calculate_entropy() { # calculate entropy(only if test trials are run)
         fi
     done
 
-    echo "Entropy of the dice rolls: $entropy"
+    echo "Entropy value: $entropy"
 }
 # driver section
 while true; do
@@ -86,17 +86,23 @@ while true; do
             [Nn] )
                 # prompt for randomness test decision if not playing again
                 while true; do
-                    read -p "Do you want to run randomness tests? (Y/N): " choice
+                    read -p "Do you want to run some entropy randomness tests? (Y/N): " choice
                     case "$choice" in
                         [Yy] )
-                            num_trials=60
-                            echo "Starting Test 1..."
+                            num_trials=60 # test 1 set at 60 trials
+                            echo "Starting Test 1 with $num_trails trials..."
+                            run_trials $num_trials
+                            num_trails=600 #test 2 set at 600 trails
+                            echo "Starting Test 2 with $num_trails trials..."
+                            run_trails $num_trails
+                            num_trials=6000 # test 3 set at 6000 trials
+                            echo "Starting Test 3 with $num_trails trials..."
                             run_trials $num_trials
                             exit 0
                             ;;
                         [Nn] )
                             echo "Thanks for playing!"
-                            exit 0
+                            exit # exiting script
                             ;;
                         * )
                             echo "Please answer 'Y' for Yes or 'N' for No."

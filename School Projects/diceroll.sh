@@ -1,5 +1,6 @@
 #!/bin/bash
 # "Client Program"
+#function for generating a random integer ranging from 1-6
 roll_dice() {
     echo $(( ( RANDOM % 6 ) + 1 ))
 }
@@ -17,14 +18,14 @@ get_num_dice() {
     done
 }
 
-#call to get number of dice prior to rolling
+#call to get number of dice to roll prior to rolling
 get_num_dice
 
-# generate the random value(roll the dice) and add each rolled value to resuilts
+# add each rolled value to results
 results=()
 for (( i=0; i<$num_dice; i++ )); do
     results+=($(roll_dice))
 done
 
-# Print the results(rolled values)
+# Print value of each result
 echo "You rolled: ${results[@]}"

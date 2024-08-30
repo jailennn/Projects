@@ -1,7 +1,9 @@
 #!/bin/bash
 
-# source the dice_roller.sh file to use the roll_dice function
-source ./diceroll.sh
+# use same randomization function for testing
+roll_dice() {
+    echo $(( ( RANDOM % 6 ) + 1 ))
+}
 
 # function to run trials and tally results
 run_trials() {

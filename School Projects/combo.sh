@@ -1,17 +1,6 @@
 #!/bin/bash
-# Client Section
-
-# Function for generating a random integer ranging from 1-6 (rolling a dice)
-roll_dice() {
-    local num_dice=$1
-    results=()
-    for ((i=0; i<num_dice; i++)); do
-        results+=($(( ( RANDOM % 6 ) + 1 )))
-    done
-    echo "${results[@]}"
-}
-
-# Function to get user input for # of dice, also checking that the input is an integer 1-5.
+# client Section
+# function to get user input for # of dice, also checking that the input is an integer 1-5.
 get_num_dice() {
     while true; do
         echo "How many dice do you want to roll? (1-5)"
@@ -23,58 +12,101 @@ get_num_dice() {
         fi
     done
 }
-
-# Function to run trials and tally results
+# function for generating a random integer ranging from 1-6 (rolling a dice)
+roll_dice() {
+    local num_dice=$1
+    results=()
+    for ((i=0; i<num_dice; i++)); do
+        results+=($(( ( RANDOM % 6 ) + 1 )))
+    done
+    echo "${results[@]}"
+}
+start_game() { # function to begin playing game
+    # get number of dice to roll from user input
+    get_num_dice
+    # roll the dice and add each rolled value to results
+    results=()
+    for (( i=0; i<$num_dice; i++ )); do
+        results+=($(roll_dice 1))
+    done
+    echo "You rolled: ${results[@]}"
+}
+# function to run trials and tally results(testing part of code)
 run_trials() {
     local trials=$1
-    declare -A tally # Associative array declaration
+    declare -A tally # associative array declaration
 
     for ((i=0; i<$trials; i++)); do
-        # Roll 5 dice and store them in a variable
+        # roll 5 dice(max at once) and store them
         rolled_numbers=$(roll_dice 5)
 
-        # Tally the results in the associative array
+        # tally results in the associative array
         for num in $rolled_numbers; do
             ((tally[$num]++))
         done
     done
 
-    # Display the tally results
+    # display tally results
     echo "Tally of rolled numbers after $trials trials:"
     for num in "${!tally[@]}"; do
         echo "$num: ${tally[$num]}"
     done
+    calculate_entropy
 }
+calculate_entropy() { # calculate entropy(only if test trials are run)
+    local -A probabilities
+    local entropy=0
 
-#Driver Section
-#call to get number of dice to roll prior to rolling
-get_num_dice
+    # probability calculation
+    for num in "${!tally[@]}"; do
+        probabilities[$num]=$(echo "${tally[$num]} / $trials" | bc -l)
+    done
 
-# add each rolled value to results
-results=()
-for (( i=0; i<$num_dice; i++ )); do
-    results+=($(roll_dice 1))
-done
+    # entropy calculation
+    for prob in "${probabilities[@]}"; do
+        if (( $(echo "$prob > 0" | bc -l) )); then
+            entropy=$(echo "$entropy - $prob * l($prob)/l(2)" | bc -l)
+        fi
+    done
 
-# print value of each result
-echo "You rolled: ${results[@]}"
-
-# prompt user for randomness test decision. Ensures dice game can still be played normally, only testing randomness when user wants to.
+    echo "Entropy of the dice rolls: $entropy"
+}
+# driver section
 while true; do
-    read -p "Do you want to run randomness tests? (Y/N): " choice
-    case "$choice" in # pattern match case to only accept y,n,Y,N.
-        [Yy] )
-            num_trials=60
-            echo "Starting Test 1..."
-            run_trials $num_trials
-            break
-            ;;
-        [Nn] )
-            echo "Thanks for playing!"
-            exit 0
-            ;;
-        * )
-            echo "Please answer Y or N."
-            ;;
-    esac
+    # call to start playing game
+    start_game
+
+    # for replay(practicality)
+    while true; do
+        read -p "Do you want to play again? (Y/N): " play_again
+        case "$play_again" in
+            [Yy] )
+                break
+                ;;
+            [Nn] )
+                # prompt for randomness test decision if not playing again
+                while true; do
+                    read -p "Do you want to run randomness tests? (Y/N): " choice
+                    case "$choice" in
+                        [Yy] )
+                            num_trials=60
+                            echo "Starting Test 1..."
+                            run_trials $num_trials
+                            exit 0
+                            ;;
+                        [Nn] )
+                            echo "Thanks for playing!"
+                            exit 0
+                            ;;
+                        * )
+                            echo "Please answer 'Y' for Yes or 'N' for No."
+                            ;;
+                    esac
+                done
+                ;;
+            * )
+                echo "Please answer 'Y' for Yes or 'N' for No."
+                ;;
+        esac
+    done
 done

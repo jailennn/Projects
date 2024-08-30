@@ -27,5 +27,5 @@ for (( i=0; i<$num_dice; i++ )); do
     results+=($(roll_dice))
 done
 
-# Print value of each result
+# print value of each result
 echo "You rolled: ${results[@]}"

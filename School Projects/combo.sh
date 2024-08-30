@@ -59,8 +59,22 @@ done
 # print value of each result
 echo "You rolled: ${results[@]}"
 
-num_trials=60
-
-# run trails
-echo "Starting Test 1..."
-run_trials $num_trials
+# prompt user for randomness test decision. Ensures dice game can still be played normally, only testing randomness when user wants to.
+while true; do
+    read -p "Do you want to run randomness tests? (Y/N): " choice
+    case "$choice" in # pattern match case to only accept y,n,Y,N.
+        [Yy] )
+            num_trials=60
+            echo "Starting Test 1..."
+            run_trials $num_trials
+            break
+            ;;
+        [Nn] )
+            echo "Exiting script."
+            exit 0
+            ;;
+        * )
+            echo "Please answer Y or N."
+            ;;
+    esac
+done

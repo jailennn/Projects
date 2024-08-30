@@ -90,13 +90,13 @@ while true; do
                     case "$choice" in
                         [Yy] )
                             num_trials=60 # test 1 set at 60 trials
-                            echo "Starting Test 1 with $num_trails trials..."
+                            echo "Starting Test 1 with $num_trials trials..."
                             run_trials $num_trials
-                            num_trails=600 #test 2 set at 600 trails
-                            echo "Starting Test 2 with $num_trails trials..."
+                            num_trials=600 #test 2 set at 600 trails
+                            echo "Starting Test 2 with $num_trials trials..."
                             run_trails $num_trails
                             num_trials=6000 # test 3 set at 6000 trials
-                            echo "Starting Test 3 with $num_trails trials..."
+                            echo "Starting Test 3 with $num_trials trials..."
                             run_trials $num_trials
                             exit 0
                             ;;

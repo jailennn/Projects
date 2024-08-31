@@ -30,7 +30,7 @@ start_game() { # function to begin playing game
     for (( i=0; i<$num_dice; i++ )); do
         results+=($(roll_dice 1))
     done
-    echo "You rolled: ${results[@]}"
+    echo "You rolled - ${results[@]}"
 }
 # AI assistant was used to help wrtie the following section of code.
 # My prompt: "How can I test multiple trials of rolling 5 dice and tally the results for each possible outcome using a bash function and loop"
@@ -70,10 +70,10 @@ run_trials() { # function to run trials and tally results(testing part of code).
     done
 
     # display tally results
-    echo "Tally after $trials trials:"
+    echo "Tally after $trials trials($total_rolls rolls):"
     sleep 1
     for num in "${!tally[@]}"; do
-        echo "$num- ${tally[$num]}"
+        echo "$num - ${tally[$num]}"
     done
     calculate_entropy
 }
@@ -123,7 +123,7 @@ calculate_entropy() { # calculate entropy function(only called if test trials ar
     done
     round_num=$(printf "%.2f" "$entropy")
     sleep 1
-    echo "Entropy value- $round_num bits"
+    echo "Entropy value - $round_num bits"
 }
 
 # driver section

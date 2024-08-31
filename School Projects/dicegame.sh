@@ -17,7 +17,7 @@ roll_dice() {
     num_dice=$1
     results=()
     for ((i=0; i<num_dice; i++)); do
-        random_byte=$(od -An -N1 -t u1 /dev/urandom) #man page of od
+        random_byte=$(od -An -N2 -t u2 /dev/urandom | tr -d ' ') #man page of od
         dice_roll=$(( (random_byte % 6) + 1 ))
         results+=($dice_roll)
     done

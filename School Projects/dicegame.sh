@@ -110,10 +110,11 @@ run_trials() { # function to run trials and tally results(testing part of code).
 calculate_entropy() { # calculate entropy(only executed if test trials are run)
     declare -A probabilities
     entropy=0
+    total_rolls=$((trials * 5))
 
     # probability calculation
     for num in "${!tally[@]}"; do
-        probabilities[$num]=$(echo "scale=10; ${tally[$num]} / $trials" | bc -l)
+        probabilities[$num]=$(echo "scale=10; ${tally[$num]} / $total_rolls" | bc -l)
     done
 
     # entropy calculation

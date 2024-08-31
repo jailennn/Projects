@@ -6,7 +6,7 @@ get_num_dice() {
         echo "How many dice do you want to roll? (1-5)"
         read num_dice
         if [[ "$num_dice" =~ ^[1-5]$ ]]; then
-            break
+        break
         else
             echo "Invalid input. Please enter an integer between 1 and 5."
         fi
@@ -17,8 +17,11 @@ roll_dice() {
     num_dice=$1
     results=()
     for ((i=0; i<num_dice; i++)); do
-        results+=($(( ( RANDOM % 6 ) + 1 )))
+        random_byte=$(od -An -N1 -t u1 /dev/urandom) #man page of od
+        dice_roll=$(( (random_byte % 6) + 1 ))
+        results+=($dice_roll)
     done
+
     echo "${results[@]}"
 }
 start_game() { # function to begin playing game

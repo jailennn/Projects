@@ -54,7 +54,7 @@ start_game() { # function to begin playing game
 #for outcome in "${!outcome_counts[@]}"; do
   #echo -e "$outcome\t${outcome_counts[$outcome]}"
 #done"
-# Note: some variables, syntax, and comments are altered to my need.
+# Note: AI provided output has been altered to fully meet my needs.
 run_trials() {
     trials=$1
     declare -A tally # associative array declaration

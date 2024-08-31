@@ -109,7 +109,7 @@ calculate_entropy() { # calculate entropy(only executed if test trials are run)
     entropy=0
 
     # probability calculation
-    for num in "${!tally[@]}"; do
+    for num in "${tally[@]}"; do
         probabilities[$num]=$(echo "scale=10; ${tally[$num]} / $trials" | bc -l)
     done
 

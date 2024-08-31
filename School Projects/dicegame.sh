@@ -4,7 +4,7 @@
 get_num_dice() {
     while true; do
         echo "How many dice do you want to roll? (1-5)"
-        read num_dice
+        read num_dice #reads om number that user inputs
         if [[ "$num_dice" =~ ^[1-5]$ ]]; then
         break
         else
@@ -17,13 +17,13 @@ roll_dice() {
     num_dice=$1
     results=()
     for ((i=0; i<num_dice; i++)); do
-        results+=($(( ( RANDOM % 6 ) + 1 )))
+        results+=($(( ( RANDOM % 6 ) + 1 ))) 
     done
     echo "${results[@]}"
 }
 
 start_game() { # function to begin playing game
-    # get number of dice to roll from user input
+    # calls for user input
     get_num_dice
     # roll the dice and add each rolled value to results
     results=()
@@ -118,7 +118,7 @@ calculate_entropy() { # calculate entropy(only executed if test trials are run)
     # entropy calculation
     for prob in "${probabilities[@]}"; do
         if (( $(echo "$prob > 0" | bc -l) )); then
-            entropy=$(echo "scale=10; $entropy - $prob * l($prob)/l(2)" | bc -l)
+            entropy=$(echo "scale=10; $entropy - $prob * l($prob)/l(2)" | bc -l) 
         fi
     done
     round_num=$(printf "%.2f" "$entropy")
@@ -126,48 +126,35 @@ calculate_entropy() { # calculate entropy(only executed if test trials are run)
     echo "Entropy value: $round_num bits"
 }
 # driver section
-while true; do
-    # call to start playing game
-    start_game
+# call to start playing the game
+start_game
 
-    # for replay(practicality)
-    while true; do
-        read -p "Do you want to play again? (Y/N): " play_again
-        case "$play_again" in
-            [Yy] )
-                break
-                ;;
-            [Nn] )
-                # prompt for randomness test decision if not playing again
-                while true; do
-                    read -p "Do you want to run some entropy randomness tests? (Y/N): " choice
-                    case "$choice" in
-                        [Yy] )
-                            num_trials=60 # test 1 set at 60 trials
-                            echo "Starting Test 1 with $num_trials trials..."
-                            run_trials $num_trials
-                            num_trials=600 #test 2 set at 600 trails
-                            echo "Starting Test 2 with $num_trials trials..."
-                            run_trials $num_trials
-                            num_trials=6000 # test 3 set at 6000 trials
-                            echo "Starting Test 3 with $num_trials trials..."
-                            run_trials $num_trials
-                            echo "Thanks for playing!"
-                            exit 0
-                            ;;
-                        [Nn] )
-                            echo "Thanks for playing!"
-                            exit # exiting script
-                            ;;
-                        * )
-                            echo "Please answer 'Y' for Yes or 'N' for No."
-                            ;;
-                    esac
-                done
-                ;;
-            * )
-                echo "Please answer 'Y' for Yes or 'N' for No."
-                ;;
-        esac
-    done
+# prompt for randomness test decision
+while true; do
+    read -p "Do you want to run some entropy randomness tests? (Y/N): " choice
+    case "$choice" in
+        [Yy] )
+            num_trials=60 # test 1 set at 60 trials
+            echo "Starting Test 1 with $num_trials trials..."
+            run_trials $num_trials
+
+            num_trials=600 # test 2 set at 600 trials
+            echo "Starting Test 2 with $num_trials trials..."
+            run_trials $num_trials
+
+            num_trials=6000 # test 3 set at 6000 trials
+            echo "Starting Test 3 with $num_trials trials..."
+            run_trials $num_trials
+
+            echo "Thanks for playing!"
+            exit 0
+            ;;
+        [Nn] )
+            echo "Thanks for playing!"
+            exit 0
+            ;;
+        * )
+            echo "Please answer 'Y' for Yes or 'N' for No."
+            ;;
+    esac
 done

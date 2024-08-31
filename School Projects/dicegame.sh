@@ -32,8 +32,45 @@ start_game() { # function to begin playing game
     echo "You rolled: ${results[@]}"
 }
 # function to run trials and tally results(testing part of code).
-#AI assistant was used to help wrtie the following function
-#
+#AI assistant was used to help wrtie the following section of code.
+#My prompt: "How can I test multiple trials of rolling 5 dice and tally the results for each possible outcome using a bash function and loop"
+#AI Output:
+<!--
+#!/bin/bash
+
+# Number of trials
+num_trials=1000
+
+# Initialize an associative array to keep track of the counts of each outcome
+declare -A outcome_counts
+
+# Function to roll 5 dice and generate a sorted outcome string
+roll_dice() {
+  local rolls=()
+  for _ in {1..5}; do
+    rolls+=($((RANDOM % 6 + 1)))
+  done
+  # Sort rolls and convert to a string
+  printf -v outcome "%s " "${rolls[@]}"
+  outcome=$(echo $outcome | tr ' ' '\n' | sort -n | tr '\n' ' ' | xargs)
+  echo "$outcome"
+}
+
+# Run trials
+for ((i=1; i<=num_trials; i++)); do
+  outcome=$(roll_dice)
+  # Increment the count for this outcome
+  ((outcome_counts["$outcome"]++))
+done
+
+# Print the results
+echo "Outcome\tCount"
+for outcome in "${!outcome_counts[@]}"; do
+  echo -e "$outcome\t${outcome_counts[$outcome]}"
+done
+
+-->
+
 run_trials() {
     trials=$1
     declare -A tally # associative array declaration

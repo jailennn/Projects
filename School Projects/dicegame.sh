@@ -17,13 +17,11 @@ roll_dice() {
     num_dice=$1
     results=()
     for ((i=0; i<num_dice; i++)); do
-        random_byte=$(od -An -N2 -t u2 /dev/urandom | tr -d ' ') #using octal dump command with adjustment flags to get random number
-        dice_roll=$(( (random_byte % 6) + 1 ))
-        results+=($dice_roll)
+        results+=($(( ( RANDOM % 6 ) + 1 )))
     done
-
     echo "${results[@]}"
 }
+
 start_game() { # function to begin playing game
     # get number of dice to roll from user input
     get_num_dice

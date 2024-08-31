@@ -17,7 +17,7 @@ roll_dice() {
     num_dice=$1
     results=()
     for ((i=0; i<num_dice; i++)); do
-        random_byte=$(od -An -N2 -t u2 /dev/urandom | tr -d ' ') #man page of od
+        random_byte=$(od -An -N2 -t u2 /dev/urandom | tr -d ' ') #using octal dump command with adjustment flags to get random number
         dice_roll=$(( (random_byte % 6) + 1 ))
         results+=($dice_roll)
     done
@@ -36,7 +36,6 @@ start_game() { # function to begin playing game
 }
 # AI assistant was used to help wrtie the following section of code.
 # My prompt: "How can I test multiple trials of rolling 5 dice and tally the results for each possible outcome using a bash function and loop"
-# Note: AI provided output has been altered to fully meet my needs.
 #AI Output:"
 #num_trials=1000
 #roll_dice() {
@@ -57,6 +56,7 @@ start_game() { # function to begin playing game
 #for outcome in "${!outcome_counts[@]}"; do
   #echo -e "$outcome\t${outcome_counts[$outcome]}"
 #done"
+# Note: AI provided output has been altered to fully meet my needs.#AI Output:"
 run_trials() { # function to run trials and tally results(testing part of code).
     trials=$1
     declare -A tally # associative array declaration
@@ -81,7 +81,6 @@ run_trials() { # function to run trials and tally results(testing part of code).
 }
 # AI assistant was used to help wrtie the following section of code.
 #My prompt: What’s the best way to implement the entropy formula in Bash using logarithm calculation.
-# Note: AI provided output has been altered to fully meet my needs.
 #AI Output:"
 # Check if input file is provided
 #if [ "$#" -ne 1 ]; then
@@ -107,6 +106,7 @@ run_trials() { # function to run trials and tally results(testing part of code).
 #done < "$PROB_FILE"
 # Output the entropy
 #echo "Entropy: $entropy""
+# Note: AI provided output has been altered to fully meet my needs.
 calculate_entropy() { # calculate entropy(only executed if test trials are run)
     declare -A probabilities
     entropy=0

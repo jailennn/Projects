@@ -144,13 +144,13 @@ while true; do
                     read -p "Do you want to run some entropy randomness tests? (Y/N): " choice
                     case "$choice" in
                         [Yy] )
-                            num_trials=600 # test 1 set at 600 trials
+                            num_trials=60 # test 1 set at 60 trials
                             echo "Starting Test 1 with $num_trials trials..."
                             run_trials $num_trials
-                            num_trials=6000 #test 2 set at 6,000 trails
+                            num_trials=600 #test 2 set at 600 trails
                             echo "Starting Test 2 with $num_trials trials..."
                             run_trials $num_trials
-                            num_trials=60000 # test 3 set at 60,000 trials
+                            num_trials=6000 # test 3 set at 6000 trials
                             echo "Starting Test 3 with $num_trials trials..."
                             run_trials $num_trials
                             echo "Thanks for playing!"

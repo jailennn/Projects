@@ -31,7 +31,9 @@ start_game() { # function to begin playing game
     done
     echo "You rolled: ${results[@]}"
 }
-# function to run trials and tally results(testing part of code)
+# function to run trials and tally results(testing part of code).
+#AI assistant was used to help wrtie the following function
+#
 run_trials() {
     trials=$1
     declare -A tally # associative array declaration

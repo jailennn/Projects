@@ -32,7 +32,8 @@ start_game() { # function to begin playing game
     echo "You rolled: ${results[@]}"
 }
 # AI assistant was used to help wrtie the following section of code.
-#My prompt: "How can I test multiple trials of rolling 5 dice and tally the results for each possible outcome using a bash function and loop"
+# My prompt: "How can I test multiple trials of rolling 5 dice and tally the results for each possible outcome using a bash function and loop"
+# Note: AI provided output has been altered to fully meet my needs.
 #AI Output:"
 #num_trials=1000
 #roll_dice() {
@@ -53,7 +54,6 @@ start_game() { # function to begin playing game
 #for outcome in "${!outcome_counts[@]}"; do
   #echo -e "$outcome\t${outcome_counts[$outcome]}"
 #done"
-# Note: AI provided output has been altered to fully meet my needs.
 run_trials() { # function to run trials and tally results(testing part of code).
     trials=$1
     declare -A tally # associative array declaration
@@ -76,7 +76,35 @@ run_trials() { # function to run trials and tally results(testing part of code).
     done
     calculate_entropy
 }
-calculate_entropy() { # calculate entropy(only if test trials are run)
+# AI assistant was used to help wrtie the following section of code.
+#My prompt: What’s the best way to implement the entropy formula in Bash using logarithm calculation.
+# Note: AI provided output has been altered to fully meet my needs.
+#AI Output:"
+# Check if input file is provided
+#if [ "$#" -ne 1 ]; then
+    #echo "Usage: $0 <probabilities_file>"
+    #exit 1
+#fi
+# File containing probabilities (one per line)
+#PROB_FILE=$1
+# Initialize variables
+#entropy=0
+# Read probabilities from the file
+#while IFS= read -r prob; do
+    # Skip empty lines or lines that do not represent valid probabilities
+    #if [ -z "$prob" ] || [ "$(echo "$prob > 0" | bc)" -eq 0 ]; then
+        #continue
+    #fi
+
+    # Calculate log2(prob) using bc
+    #log2=$(echo "scale=10; l($prob) / l(2)" | bc -l)
+
+    # Update entropy using bc
+    #entropy=$(echo "scale=10; $entropy - ($prob * $log2)" | bc -l)
+#done < "$PROB_FILE"
+# Output the entropy
+#echo "Entropy: $entropy""
+calculate_entropy() { # calculate entropy(only executed if test trials are run)
     declare -A probabilities
     entropy=0
 
@@ -93,7 +121,7 @@ calculate_entropy() { # calculate entropy(only if test trials are run)
     done
     round_num=$(printf "%.2f" "$entropy")
     sleep 1
-    echo "Entropy value: $round_num"
+    echo "Entropy value: $round_num bits"
 }
 # driver section
 while true; do

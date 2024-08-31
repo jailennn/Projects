@@ -32,7 +32,6 @@ start_game() { # function to begin playing game
     echo "You rolled: ${results[@]}"
 }
 # AI assistant was used to help wrtie the following section of code.
-# function to run trials and tally results(testing part of code).
 #My prompt: "How can I test multiple trials of rolling 5 dice and tally the results for each possible outcome using a bash function and loop"
 #AI Output:"
 #num_trials=1000
@@ -55,7 +54,7 @@ start_game() { # function to begin playing game
   #echo -e "$outcome\t${outcome_counts[$outcome]}"
 #done"
 # Note: AI provided output has been altered to fully meet my needs.
-run_trials() {
+run_trials() { # function to run trials and tally results(testing part of code).
     trials=$1
     declare -A tally # associative array declaration
 
@@ -123,6 +122,7 @@ while true; do
                             num_trials=6000 # test 3 set at 6000 trials
                             echo "Starting Test 3 with $num_trials trials..."
                             run_trials $num_trials
+                            echo "Thanks for playing!"
                             exit 0
                             ;;
                         [Nn] )

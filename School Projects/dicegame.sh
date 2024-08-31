@@ -4,7 +4,7 @@
 get_num_dice() {
     while true; do
         echo "How many dice do you want to roll? (1-5)"
-        read num_dice #reads om number that user inputs
+        read num_dice # reads in number that user inputs
         if [[ "$num_dice" =~ ^[1-5]$ ]]; then
         break
         else
@@ -54,7 +54,7 @@ start_game() { # function to begin playing game
 #for outcome in "${!outcome_counts[@]}"; do
   #echo -e "$outcome\t${outcome_counts[$outcome]}"
 #done"
-# Note: AI provided output has been altered to fully meet my needs.#AI Output:"
+# Note: AI provided output has been altered to fully meet my needs.
 run_trials() { # function to run trials and tally results(testing part of code).
     trials=$1
     declare -A tally # associative array declaration
@@ -70,10 +70,10 @@ run_trials() { # function to run trials and tally results(testing part of code).
     done
 
     # display tally results
-    echo "Tally of rolled numbers after $trials trials:"
+    echo "Tally after $trials trials:"
     sleep 1
     for num in "${!tally[@]}"; do
-        echo "$num: ${tally[$num]}"
+        echo "$num- ${tally[$num]}"
     done
     calculate_entropy
 }
@@ -103,9 +103,9 @@ run_trials() { # function to run trials and tally results(testing part of code).
     #entropy=$(echo "scale=10; $entropy - ($prob * $log2)" | bc -l)
 #done < "$PROB_FILE"
 # Output the entropy
-#echo "Entropy: $entropy""
+#echo "Entropy: $entropy"
 # Note: AI provided output has been altered to fully meet my needs.
-calculate_entropy() { # calculate entropy(only executed if test trials are run)
+calculate_entropy() { # calculate entropy function(only called if test trials are run)
     declare -A probabilities
     entropy=0
     total_rolls=$((trials * 5))
@@ -123,34 +123,27 @@ calculate_entropy() { # calculate entropy(only executed if test trials are run)
     done
     round_num=$(printf "%.2f" "$entropy")
     sleep 1
-    echo "Entropy value: $round_num bits"
+    echo "Entropy value- $round_num bits"
 }
+
 # driver section
 # call to start playing the game
 start_game
-
-# prompt for randomness test decision
 while true; do
-    read -p "Do you want to run some entropy randomness tests? (Y/N): " choice
+    read -p "Run entropy tests? (Y/N): " choice
     case "$choice" in
         [Yy] )
             num_trials=60 # test 1 set at 60 trials
-            echo "Starting Test 1 with $num_trials trials..."
             run_trials $num_trials
 
             num_trials=600 # test 2 set at 600 trials
-            echo "Starting Test 2 with $num_trials trials..."
             run_trials $num_trials
 
             num_trials=6000 # test 3 set at 6000 trials
-            echo "Starting Test 3 with $num_trials trials..."
             run_trials $num_trials
-
-            echo "Thanks for playing!"
             exit 0
             ;;
         [Nn] )
-            echo "Thanks for playing!"
             exit 0
             ;;
         * )

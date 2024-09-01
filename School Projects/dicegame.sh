@@ -71,7 +71,7 @@ start_game() { # function to begin playing game
 # Output the entropy
 #echo "Entropy: $entropy"
 # Note: AI provided output has been altered to fully meet my needs.
-calculate_entropy() {
+calculate_randomness() {
     declare -A probabilities # Associative array declaration
     entropy=0
     total_rolls=$((trials * num_dice)) # Calculate total rolls based on the number of trials and dice

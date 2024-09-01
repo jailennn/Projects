@@ -121,7 +121,7 @@ run_trials() { # function to run trials and tally results(testing part of code).
     echo "$trials trials tally: "
     sleep 1
     for num in "${!tally[@]}"; do
-    percentage=$(printf "%.2f" "$(echo "scale=4; ${tally[$num]} * 100 / $total_rolls" | bc -l)")
+    percentage=$(printf "%.2f" "$(echo "scale=2; ${tally[$num]} * 100 / $total_rolls" | bc -l)")
     echo "$num - ${tally[$num]}, $percentage%"
     done
     calculate_entropy

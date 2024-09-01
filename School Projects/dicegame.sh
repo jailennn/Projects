@@ -83,7 +83,7 @@ calculate_randomness() {
         echo "$num - ${tally[$num]}, $rounded_percentage%"
     done
 
-    # odd and even calculation
+    # Odd and even calculation
     odds_count=0
     evens_count=0
     for num in "${!tally[@]}"; do
@@ -94,13 +94,13 @@ calculate_randomness() {
         fi
     done
 
-    # display odds and evens percentages
-    odd_percentage=$(echo "scale=2; $odd_count * 100 / $total_rolls" | bc -l)
-    even_percentage=$(echo "scale=2; $even_count * 100 / $total_rolls" | bc -l)
+    # Display odds and evens percentages
+    odd_percentage=$(echo "scale=2; $odds_count * 100 / $total_rolls" | bc -l)
+    even_percentage=$(echo "scale=2; $evens_count * 100 / $total_rolls" | bc -l)
     echo "Odds - $odd_percentage%"
     echo "Evens - $even_percentage%"
 
-    # entropy calculation
+    # Entropy calculation
     for prob in "${probabilities[@]}"; do
         if (( $(echo "$prob > 0" | bc -l) )); then
             entropy=$(echo "scale=10; $entropy - $prob * l($prob)/l(2)" | bc -l)
@@ -136,16 +136,16 @@ calculate_randomness() {
 run_trials() { # function to run trials and tally results (testing part of code)
     declare -A tally # associative array declaration
     for ((i=0; i<$trials; i++)); do
-        # roll 5 dice (max at once) and store them
+        # Roll the number of dice the user selected earlier and store them
         rolled_numbers=$(roll_dice $num_dice)
 
-        # tally results in the associative array
+        # Tally results in the associative array
         for num in $rolled_numbers; do
             ((tally[$num]++))
         done
     done
     sleep 1
-    # call the randomness calculation function for testing statistics
+    # Call the randomness calculation function for testing statistics
     calculate_randomness
 }
 # call to start playing the game

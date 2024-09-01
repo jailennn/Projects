@@ -68,7 +68,6 @@ calculate_entropy() { # calculate entropy function(only called if test trials ar
     # probability calculation using basic calculator
     for num in "${!tally[@]}"; do
         probabilities[$num]=$(echo "scale=10; ${tally[$num]} / $total_rolls" | bc -l)
-        percentage=$(echo "scale=2; ${probabilities[$num]} * 100" | bc -l)
     done
 
     # entropy calculation
@@ -118,11 +117,12 @@ run_trials() { # function to run trials and tally results(testing part of code).
         done
     done
 
-    # display tally results and percentages
+    # display tally results and calculate percentages for each outcome(rounded)
     echo "$trials trials tally: "
     sleep 1
     for num in "${!tally[@]}"; do
-        echo "$num - ${tally[$num]}, $percentage"
+    percentage=$(printf "%.2f" "$(echo "scale=4; ${tally[$num]} * 100 / $total_rolls" | bc -l)")
+    echo "$num - ${tally[$num]}, $percentage%"
     done
     calculate_entropy
 }

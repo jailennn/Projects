@@ -17,7 +17,6 @@ get_num_trials() { # function to get user input for number of trials.
         echo "How many trials to run? "
         read trials # reads in the number that user inputs
         if [[ "$trials" =~ ^[0-9]+$ ]]; then
-            echo ""
             break
         else
             echo "Invalid input. Please enter a positive integer."
@@ -38,7 +37,7 @@ start_game() { # function to begin playing game
     get_num_dice
     rolled_numbers=$(roll_dice $num_dice)
     
-    echo "${rolled_numbers}"
+    echo " Rolled - ${rolled_numbers}"
     get_num_trials #prompt for trials after game is played
 }
 # AI assistant was used to help wrtie the following section of code.

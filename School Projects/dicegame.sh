@@ -71,14 +71,15 @@ start_game() { # function to begin playing game
 # Output the entropy
 #echo "Entropy: $entropy"
 # Note: AI provided output has been altered to fully meet my needs.
-calculate_randomness() {
-    declare -A probabilities # associative array declaration
+calculate_entropy() {
+    declare -A probabilities # Associative array declaration
     entropy=0
-    total_rolls=$((trials * num_dice))
+    total_rolls=$((trials * num_dice)) # Calculate total rolls based on the number of trials and dice
     
-    odd_nums=0
-    even_nums=0
-    # probability calculation and percentage display
+    # Calculate the count of odd and even numbers
+    odd_count=0
+    even_count=0
+
     echo "$trials trials tally:"
     sleep 1
     for num in "${!tally[@]}"; do
@@ -86,23 +87,25 @@ calculate_randomness() {
         percentage=$(echo "scale=2; ${probabilities[$num]} * 100" | bc -l)
         rounded_percentage=$(printf "%.2f" "$percentage")
         echo "$num - ${tally[$num]}, $rounded_percentage%"
-        
-    # Calculate and display the percentage of odd and even rolls
-        if (( num % 2 == 0 )); then 
-            ((even_nums++))
+
+        # Calculate odds and evens
+        if (( num % 2 == 0 )); then
+            ((even_count += tally[$num]))
         else
-            ((odd_nums++))
+            ((odd_count += tally[$num]))
         fi
     done
-    odd_percentage=$(echo "scale=2; $odd_nums * 100 / $total_rolls" | bc -l)
-    even_percentage=$(echo "scale=2; $even_nums * 100 / $total_rolls" | bc -l)
-    echo "Odds - ${odd_percentage}%"
-    echo "Evens - ${even_percentage}%"
-    
-    # final entropy calculation
+
+    # Display odds and evens percentages
+    odd_percentage=$(echo "scale=2; $odd_count * 100 / $total_rolls" | bc -l)
+    even_percentage=$(echo "scale=2; $even_count * 100 / $total_rolls" | bc -l)
+    echo "Odds - $odd_percentage%"
+    echo "Evens - $even_percentage%"
+
+    # Entropy calculation
     for prob in "${probabilities[@]}"; do
         if (( $(echo "$prob > 0" | bc -l) )); then
-            entropy=$(echo "scale=10; $entropy - $prob * l($prob)/l(2)" | bc -l) 
+            entropy=$(echo "scale=10; $entropy - $prob * l($prob)/l(2)" | bc -l)
         fi
     done
     round_num=$(printf "%.2f" "$entropy")

@@ -38,7 +38,7 @@ start_game() { # function to begin playing game
     get_num_dice
     rolled_numbers=$(roll_dice $num_dice)
     
-    echo "${results[@]}"
+    echo "${rolled_numbers}"
     get_num_trials #prompt for trials after game is played
 }
 # AI assistant was used to help wrtie the following section of code.

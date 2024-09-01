@@ -71,7 +71,8 @@ calculate_entropy() {
     for num in "${!tally[@]}"; do
         probabilities[$num]=$(echo "scale=10; ${tally[$num]} / $total_rolls" | bc -l)
         percentage=$(echo "scale=2; ${probabilities[$num]} * 100" | bc -l)
-        echo "$num - ${tally[$num]}, $percentage%"
+        rounded_percentage=$(printf "%.2f" "$percentage")
+        echo "$num - ${tally[$num]}, $rounded_percentage%"
     done
 
     # entropy calculation

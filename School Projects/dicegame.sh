@@ -12,7 +12,7 @@ get_num_dice() {
         fi
     done
 }
-get_num_trials() { # Function to get user input for number of trials.
+get_num_trials() { # function to get user input for number of trials.
     while true; do
         echo "How many trials to run? "
         read trials # reads in the number that user inputs
@@ -70,13 +70,11 @@ start_game() { # function to begin playing game
 #done < "$PROB_FILE"
 # Output the entropy
 #echo "Entropy: $entropy"
-# Note: AI provided output has been altered to fully meet my needs.
+# Note: AI provided output has been altered to fully meet my needs. 
 calculate_randomness() {
-    declare -A probabilities # Associative array declaration
+    declare -A probabilities # associative array declaration
     entropy=0
-    total_rolls=$((trials * num_dice)) # Calculate total rolls based on the number of trials and dice
-    
-    # Calculate the count of odd and even numbers
+    total_rolls=$((trials * num_dice)) # calculate total rolls based on the number of trials and dice
     odd_count=0
     even_count=0
 
@@ -88,7 +86,7 @@ calculate_randomness() {
         rounded_percentage=$(printf "%.2f" "$percentage")
         echo "$num - ${tally[$num]}, $rounded_percentage%"
 
-        # Calculate odds and evens
+        # calculate odds and evens
         if (( num % 2 == 0 )); then
             ((even_count += tally[$num]))
         else
@@ -96,13 +94,13 @@ calculate_randomness() {
         fi
     done
 
-    # Display odds and evens percentages
+    # display odds and evens percentages
     odd_percentage=$(echo "scale=2; $odd_count * 100 / $total_rolls" | bc -l)
     even_percentage=$(echo "scale=2; $even_count * 100 / $total_rolls" | bc -l)
     echo "Odds - $odd_percentage%"
     echo "Evens - $even_percentage%"
 
-    # Entropy calculation
+    # entropy calculation
     for prob in "${probabilities[@]}"; do
         if (( $(echo "$prob > 0" | bc -l) )); then
             entropy=$(echo "scale=10; $entropy - $prob * l($prob)/l(2)" | bc -l)

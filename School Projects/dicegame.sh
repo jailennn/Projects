@@ -119,7 +119,7 @@ run_trials() { # function to run trials and tally results(testing part of code).
     done
 
     # display tally results
-    echo "Tally after $trials trials($total_rolls rolls): "
+    echo "Tally after $trials trials($total_rolls total rolls): "
     sleep 1
     for num in "${!tally[@]}"; do
         echo "$num - ${tally[$num]}"

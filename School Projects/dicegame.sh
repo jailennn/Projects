@@ -12,6 +12,17 @@ get_num_dice() {
         fi
     done
 }
+get_num_trials() { # Function to get user input for number of trials.
+    while true; do
+        echo "How many trials to run? "
+        read trials # reads in the number that user inputs
+        if [[ "$trials" =~ ^[0-9]+$ ]]; then
+            break
+        else
+            echo "Invalid input. Please enter a positive integer."
+        fi
+    done
+}
 # function for generating a random integer ranging from 1-6 (rolling a dice)
 roll_dice() {
     num_dice=$1
@@ -21,16 +32,16 @@ roll_dice() {
     done
     echo "${results[@]}"
 }
-
 start_game() { # function to begin playing game
     # calls for user input
     get_num_dice
+    get_num_trials
     # roll the dice and add each rolled value to results
     results=()
     for (( i=0; i<$num_dice; i++ )); do
         results+=($(roll_dice 1))
     done
-    echo "Rolled - ${results[@]}"
+    echo "${results[@]}"
 }
 # AI assistant was used to help wrtie the following section of code.
 #My prompt: What’s the best way to implement the entropy formula in Bash using logarithm calculation.
@@ -60,10 +71,24 @@ start_game() { # function to begin playing game
 # Output the entropy
 #echo "Entropy: $entropy"
 # Note: AI provided output has been altered to fully meet my needs.
-calculate_entropy() {
+calculate_randomness() {
     declare -A probabilities # associative array declaration
     entropy=0
-    total_rolls=$((trials * 5)) # 5 dice per trial
+    odd_nums=0
+    even_nums=0
+    total_rolls=$((trials * num_dice))
+    # Calculate and display the percentage of odd and even rolls
+    for num in "${results[@]}"; do
+        if (( num % 2 == 0 )); then 
+            ((even_nums++))
+        else
+            ((odd_nums++))
+        fi
+    done
+    odd_percentage=$(echo "scale=2; $odd_nums * 100 / $total_rolls" | bc -l)
+    even_percentage=$(echo "scale=2; $even_nums * 100 / $total_rolls" | bc -l)
+    echo "Odds - ${odd_percentage}%"
+    echo "Evens - ${even_percentage}%"
     
     # probability calculation and percentage display
     echo "$trials trials tally:"
@@ -75,7 +100,7 @@ calculate_entropy() {
         echo "$num - ${tally[$num]}, $rounded_percentage%"
     done
 
-    # entropy calculation
+    # final entropy calculation
     for prob in "${probabilities[@]}"; do
         if (( $(echo "$prob > 0" | bc -l) )); then
             entropy=$(echo "scale=10; $entropy - $prob * l($prob)/l(2)" | bc -l) 
@@ -109,11 +134,10 @@ calculate_entropy() {
 #done"
 # Note: AI provided output has been altered to fully meet my needs.
 run_trials() { # function to run trials and tally results (testing part of code)
-    trials=$1
     declare -A tally # associative array declaration
     for ((i=0; i<$trials; i++)); do
         # roll 5 dice (max at once) and store them
-        rolled_numbers=$(roll_dice 5)
+        rolled_numbers=$(roll_dice $num_dice)
 
         # tally results in the associative array
         for num in $rolled_numbers; do
@@ -121,31 +145,9 @@ run_trials() { # function to run trials and tally results (testing part of code)
         done
     done
     sleep 1
-    # call the entropy calculation function, which also calculates and displays percentages
-    calculate_entropy
+    # call the randomness calculation function for testing statistics
+    calculate_randomness
 }
-# driver section
 # call to start playing the game
 start_game
-while true; do
-    read -p "Run entropy tests? (Y/N): " choice
-    case "$choice" in
-        [Yy] )
-            num_trials=60 # test 1 set at 60 trials
-            run_trials $num_trials
-
-            num_trials=600 # test 2 set at 600 trials
-            run_trials $num_trials
-
-            num_trials=6000 # test 3 set at 6000 trials
-            run_trials $num_trials
-            exit 0
-            ;;
-        [Nn] )
-            exit 0
-            ;;
-        * )
-            echo "Please answer 'Y' for Yes or 'N' for No."
-            ;;
-    esac
-done
+run_trials

@@ -3,7 +3,7 @@
 # function to get user input for # of dice, also checking that the input is an integer 1-5.
 get_num_dice() {
     while true; do
-        echo "How many dice do you want to roll? (1-5)"
+        echo "How many dice to roll? "
         read num_dice # reads in number that user inputs
         if [[ "$num_dice" =~ ^[1-5]$ ]]; then
         break
@@ -30,7 +30,7 @@ start_game() { # function to begin playing game
     for (( i=0; i<$num_dice; i++ )); do
         results+=($(roll_dice 1))
     done
-    echo "You rolled - ${results[@]}"
+    echo "Rolled - ${results[@]}"
 }
 # AI assistant was used to help wrtie the following section of code.
 #My prompt: What’s the best way to implement the entropy formula in Bash using logarithm calculation.
@@ -106,7 +106,6 @@ calculate_entropy() { # calculate entropy function(only called if test trials ar
 run_trials() { # function to run trials and tally results(testing part of code).
     trials=$1
     declare -A tally # associative array declaration
-    local total_rolls=$((trials * 5))
     
     for ((i=0; i<$trials; i++)); do
         # roll 5 dice(max at once) and store them
@@ -119,7 +118,7 @@ run_trials() { # function to run trials and tally results(testing part of code).
     done
 
     # display tally results
-    echo "Tally after $trials trials($total_rolls total rolls): "
+    echo "$trials trials tally: "
     sleep 1
     for num in "${!tally[@]}"; do
         echo "$num - ${tally[$num]}"

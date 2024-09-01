@@ -23,7 +23,7 @@ get_num_trials() { # function to get user input for number of trials.
         fi
     done
 }
-# function for generating a random integer ranging from 1-6 (rolling a dice)
+# function for generating a random integer ranging from 1-6 (rolling a die)
 roll_dice() {
     num_dice=$1
     results=()
@@ -71,11 +71,11 @@ start_game() { # function to begin playing game
 calculate_randomness() {
     declare -A probabilities # associative array declaration
     entropy=0
-    total_rolls=$((trials * num_dice)) # calculate total rolls based on the number of trials and dice
+    total_rolls=$((trials * num_dice)) #total rolls based on the number of trials and dice
 
-    echo "$trials trials tally:"
+    echo "$trials trials stats:"
     sleep 1
-    for num in "${!tally[@]}"; do
+    for num in "${!tally[@]}"; do # calculate and sdisplay tally stats
         probabilities[$num]=$(echo "scale=10; ${tally[$num]} / $total_rolls" | bc -l)
         percentage=$(echo "scale=2; ${probabilities[$num]} * 100" | bc -l)
         rounded_percentage=$(printf "%.2f" "$percentage")

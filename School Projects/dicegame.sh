@@ -61,11 +61,11 @@ start_game() { # function to begin playing game
 #echo "Entropy: $entropy"
 # Note: AI provided output has been altered to fully meet my needs.
 calculate_entropy() { # calculate entropy function(only called if test trials are run)
-    declare -A probabilities
+    declare -A probabilities # associative array declaration
     entropy=0
-    total_rolls=$((trials * 5))
-
-    # probability calculation
+    total_rolls=$((trials * 5)) # 5 dice per trial
+    
+    # probability calculation using basic calculator
     for num in "${!tally[@]}"; do
         probabilities[$num]=$(echo "scale=10; ${tally[$num]} / $total_rolls" | bc -l)
     done
@@ -106,7 +106,8 @@ calculate_entropy() { # calculate entropy function(only called if test trials ar
 run_trials() { # function to run trials and tally results(testing part of code).
     trials=$1
     declare -A tally # associative array declaration
-
+    local total_rolls=$((trials * 5))
+    
     for ((i=0; i<$trials; i++)); do
         # roll 5 dice(max at once) and store them
         rolled_numbers=$(roll_dice 5)
@@ -118,7 +119,7 @@ run_trials() { # function to run trials and tally results(testing part of code).
     done
 
     # display tally results
-    echo "Tally after $trials trials($total_rolls)"
+    echo "Tally after $trials trials($total_rolls rolls): "
     sleep 1
     for num in "${!tally[@]}"; do
         echo "$num - ${tally[$num]}"

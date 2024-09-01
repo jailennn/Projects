@@ -73,7 +73,7 @@ calculate_randomness() {
     entropy=0
     total_rolls=$((trials * num_dice)) #total rolls based on the number of trials and dice
 
-    echo "$trials trials stats:"
+    echo "$trials trials stats($num_dice rolled per trial):"
     sleep 1
     for num in "${!tally[@]}"; do # calculate and sdisplay tally stats
         probabilities[$num]=$(echo "scale=10; ${tally[$num]} / $total_rolls" | bc -l)

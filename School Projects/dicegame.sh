@@ -119,7 +119,6 @@ run_trials() { # function to run trials and tally results (testing part of code)
             ((tally[$num]++))
         done
     done
-    echo "$trials trials tally:"
     sleep 1
     # call the entropy calculation function, which also calculates and displays percentages
     calculate_entropy

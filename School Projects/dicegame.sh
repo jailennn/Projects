@@ -17,6 +17,7 @@ get_num_trials() { # function to get user input for number of trials.
         echo "How many trials to run? "
         read trials # reads in the number that user inputs
         if [[ "$trials" =~ ^[0-9]+$ ]]; then
+            echo ""
             break
         else
             echo "Invalid input. Please enter a positive integer."
@@ -35,13 +36,10 @@ roll_dice() {
 start_game() { # function to begin playing game
     # calls for user input
     get_num_dice
-    get_num_trials
-    # roll the dice and add each rolled value to results
-    results=()
-    for (( i=0; i<$num_dice; i++ )); do
-        results+=($(roll_dice 1))
-    done
+    rolled_numbers=$(roll_dice $num_dice)
+    
     echo "${results[@]}"
+    get_num_trials #prompt for trials after game is played
 }
 # AI assistant was used to help wrtie the following section of code.
 #My prompt: What’s the best way to implement the entropy formula in Bash using logarithm calculation.
@@ -75,8 +73,6 @@ calculate_randomness() {
     declare -A probabilities # associative array declaration
     entropy=0
     total_rolls=$((trials * num_dice)) # calculate total rolls based on the number of trials and dice
-    odd_count=0
-    even_count=0
 
     echo "$trials trials tally:"
     sleep 1
@@ -85,12 +81,16 @@ calculate_randomness() {
         percentage=$(echo "scale=2; ${probabilities[$num]} * 100" | bc -l)
         rounded_percentage=$(printf "%.2f" "$percentage")
         echo "$num - ${tally[$num]}, $rounded_percentage%"
+    done
 
-        # calculate odds and evens
-        if (( num % 2 == 0 )); then
-            ((even_count += tally[$num]))
+    # odd and even calculation
+    odds_count=0
+    evens_count=0
+    for num in "${!tally[@]}"; do
+        if (( num % 2 == 1 )); then
+            odds_count=$((odds_count + tally[$num]))
         else
-            ((odd_count += tally[$num]))
+            evens_count=$((evens_count + tally[$num]))
         fi
     done
 

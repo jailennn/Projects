@@ -57,6 +57,7 @@ start_game() { # function to begin playing game
 # Note: AI provided output has been altered to fully meet my needs.
 run_trials() { # function to run trials and tally results(testing part of code).
     trials=$1
+    total_rolls=$((trials * 5))
     declare -A tally # associative array declaration
 
     for ((i=0; i<$trials; i++)); do
@@ -70,7 +71,7 @@ run_trials() { # function to run trials and tally results(testing part of code).
     done
 
     # display tally results
-    echo "Tally after $trials trials($total_rolls rolls):"
+    echo "Tally after $trials trials($total_rolls)"
     sleep 1
     for num in "${!tally[@]}"; do
         echo "$num - ${tally[$num]}"

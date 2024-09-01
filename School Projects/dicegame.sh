@@ -88,7 +88,6 @@ calculate_randomness() {
         echo "$num - ${tally[$num]}, $rounded_percentage%"
         
     # Calculate and display the percentage of odd and even rolls
-    for num in "${results[@]}"; do
         if (( num % 2 == 0 )); then 
             ((even_nums++))
         else

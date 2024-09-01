@@ -74,9 +74,19 @@ start_game() { # function to begin playing game
 calculate_randomness() {
     declare -A probabilities # associative array declaration
     entropy=0
+    total_rolls=$((trials * num_dice))
+    
     odd_nums=0
     even_nums=0
-    total_rolls=$((trials * num_dice))
+    # probability calculation and percentage display
+    echo "$trials trials tally:"
+    sleep 1
+    for num in "${!tally[@]}"; do
+        probabilities[$num]=$(echo "scale=10; ${tally[$num]} / $total_rolls" | bc -l)
+        percentage=$(echo "scale=2; ${probabilities[$num]} * 100" | bc -l)
+        rounded_percentage=$(printf "%.2f" "$percentage")
+        echo "$num - ${tally[$num]}, $rounded_percentage%"
+        
     # Calculate and display the percentage of odd and even rolls
     for num in "${results[@]}"; do
         if (( num % 2 == 0 )); then 
@@ -90,16 +100,6 @@ calculate_randomness() {
     echo "Odds - ${odd_percentage}%"
     echo "Evens - ${even_percentage}%"
     
-    # probability calculation and percentage display
-    echo "$trials trials tally:"
-    sleep 1
-    for num in "${!tally[@]}"; do
-        probabilities[$num]=$(echo "scale=10; ${tally[$num]} / $total_rolls" | bc -l)
-        percentage=$(echo "scale=2; ${probabilities[$num]} * 100" | bc -l)
-        rounded_percentage=$(printf "%.2f" "$percentage")
-        echo "$num - ${tally[$num]}, $rounded_percentage%"
-    done
-
     # final entropy calculation
     for prob in "${probabilities[@]}"; do
         if (( $(echo "$prob > 0" | bc -l) )); then

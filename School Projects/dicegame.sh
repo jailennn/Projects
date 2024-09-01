@@ -60,14 +60,18 @@ start_game() { # function to begin playing game
 # Output the entropy
 #echo "Entropy: $entropy"
 # Note: AI provided output has been altered to fully meet my needs.
-calculate_entropy() { # calculate entropy function(only called if test trials are run)
+calculate_entropy() {
     declare -A probabilities # associative array declaration
     entropy=0
     total_rolls=$((trials * 5)) # 5 dice per trial
     
-    # probability calculation using basic calculator
+    # probability calculation and percentage display
+    echo "$trials trials tally:"
+    sleep 1
     for num in "${!tally[@]}"; do
         probabilities[$num]=$(echo "scale=10; ${tally[$num]} / $total_rolls" | bc -l)
+        percentage=$(echo "scale=2; ${probabilities[$num]} * 100" | bc -l)
+        echo "$num - ${tally[$num]}, $percentage%"
     done
 
     # entropy calculation

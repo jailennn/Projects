@@ -107,12 +107,11 @@ calculate_entropy() {
   #echo -e "$outcome\t${outcome_counts[$outcome]}"
 #done"
 # Note: AI provided output has been altered to fully meet my needs.
-run_trials() { # function to run trials and tally results(testing part of code).
+run_trials() { # function to run trials and tally results (testing part of code)
     trials=$1
     declare -A tally # associative array declaration
-    
     for ((i=0; i<$trials; i++)); do
-        # roll 5 dice(max at once) and store them
+        # roll 5 dice (max at once) and store them
         rolled_numbers=$(roll_dice 5)
 
         # tally results in the associative array
@@ -120,17 +119,11 @@ run_trials() { # function to run trials and tally results(testing part of code).
             ((tally[$num]++))
         done
     done
-
-    # display tally results and calculate percentages for each outcome(rounded)
-    echo "$trials trials tally: "
+    echo "$trials trials tally:"
     sleep 1
-    for num in "${!tally[@]}"; do
-    percentage=$(printf "%.2f" "$(echo "scale=2; ${tally[$num]} * 100 / $total_rolls" | bc -l)")
-    echo "$num - ${tally[$num]}, $percentage%"
-    done
+    # call the entropy calculation function, which also calculates and displays percentages
     calculate_entropy
 }
-
 # driver section
 # call to start playing the game
 start_game

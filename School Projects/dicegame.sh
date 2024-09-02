@@ -75,7 +75,7 @@ calculate_randomness() {
 
     echo "$trials trials stats($num_dice rolled per trial):"
     sleep 1
-    for num in "${!tally[@]}"; do # calculate and sdisplay tally stats
+    for num in $(printf "%s\n" "${!tally[@]}" | sort -n); do # calculate and display tally stats in order
         probabilities[$num]=$(echo "scale=10; ${tally[$num]} / $total_rolls" | bc -l)
         percentage=$(echo "scale=2; ${probabilities[$num]} * 100" | bc -l)
         rounded_percentage=$(printf "%.2f" "$percentage")

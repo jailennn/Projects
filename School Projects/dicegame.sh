@@ -204,8 +204,8 @@ run_trials() {
     fi
 
     # Output the total number of lagged correlations (repeats)
-    repeat_percentage=$(echo "scale=2; $repeat_count * 100 / $trials" | bc -l)
-    echo "Repeats - $correlation_count, $repeat_percentage%"
+    correlation_percentage=$(echo "scale=2; $correlation_count * 100 / $trials" | bc -l)
+    echo "Repeats - $correlation_count, $correlation_percentage%"
 }
 # call to start playing the game
 start_game

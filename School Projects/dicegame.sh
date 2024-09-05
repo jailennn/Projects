@@ -95,12 +95,28 @@ calculate_randomness() {
         sleep 1
         echo "Entropy value - $round_num bits"
     else
-        # Output sums tally without entropy calculation for more than 1 die
-        for sum in "${!tally[@]}"; do
-            percentage=$(echo "scale=2; ${tally[$sum]} * 100 / $trials" | bc -l)
-            rounded_percentage=$(printf "%.2f" "$percentage")
-            echo "$sum - ${tally[$sum]}, $rounded_percentage%"
+        # Output sums tally for more than 1 die
+        for sum in $(seq $min_sum $max_sum); do
+            if [[ -n ${tally[$sum]} ]]; then
+                percentage=$(echo "scale=2; ${tally[$sum]} * 100 / $trials" | bc -l)
+                rounded_percentage=$(printf "%.2f" "$percentage")
+                echo "$sum - ${tally[$sum]}, $rounded_percentage%"
+            fi
         done
+
+        # Even and odd checks
+        even_count=0
+        odd_count=0
+        for sum in $(seq $min_sum $max_sum); do
+            if (( sum % 2 == 0 )); then
+                even_count=$((even_count + ${tally[$sum]:-0}))
+            else
+                odd_count=$((odd_count + ${tally[$sum]:-0}))
+            fi
+        done
+
+        echo "Even sums total: $even_count, $(echo "scale=2; $even_count * 100 / $trials" | bc -l)%"
+        echo "Odd sums total: $odd_count, $(echo "scale=2; $odd_count * 100 / $trials" | bc -l)%"
     fi
 }
 # AI assistant was used to help wrtie the following section of code.

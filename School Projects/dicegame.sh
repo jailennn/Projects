@@ -76,7 +76,7 @@ calculate_randomness() {
     echo "$trials trials stats($num_dice rolled per trial):"
     sleep 1
     
-    # Calculate and display tally stats in order
+    # calculate and display tally stats in order
     for num in $(printf "%s\n" "${!tally[@]}" | sort -n); do
         probabilities[$num]=$(echo "scale=10; ${tally[$num]} / $total_rolls" | bc -l)
         percentage=$(echo "scale=2; ${probabilities[$num]} * 100" | bc -l)
@@ -84,7 +84,7 @@ calculate_randomness() {
         echo "$num - ${tally[$num]}, $rounded_percentage%"
     done
 
-    # Odd and even calculation based on rolled numbers
+    # odd and even calculation based on rolled numbers
     odds_count=0
     evens_count=0
     for num in "${!tally[@]}"; do
@@ -95,7 +95,7 @@ calculate_randomness() {
         fi
     done
 
-    # Display odds and evens percentages
+    # display odds and evens percentages
     total_counts=$((odds_count + evens_count))
     if (( total_counts > 0 )); then
         odd_percentage=$(echo "scale=2; $odds_count * 100 / $total_counts" | bc -l)
@@ -108,7 +108,7 @@ calculate_randomness() {
     echo "Odds - $odd_percentage%"
     echo "Evens - $even_percentage%"
 
-    # Entropy calculation if 1 die is rolled
+    # entropy calculation if 1 die is rolled
     if (( num_dice == 1 )); then
         for prob in "${probabilities[@]}"; do
             if (( $(echo "$prob > 0" | bc -l) )); then
@@ -151,23 +151,23 @@ run_trials() {
         rolled_numbers=($(roll_dice $num_dice))
 
         if (( num_dice == 2 )); then
-            # Sum calculation for two dice
+            # sum calculation for two dice
             sum=$(( ${rolled_numbers[0]} + ${rolled_numbers[1]} ))
             ((tally[$sum]++))
 
-            # Check for doubles
+            # check for doubles
             if [[ ${rolled_numbers[0]} -eq ${rolled_numbers[1]} ]]; then
                 ((double_count++))
             fi
         elif (( num_dice > 2 )); then
-            # Tally sums for multiple dice
+            # tally sums for multiple dice
             sum=0
             for num in "${rolled_numbers[@]}"; do
                 sum=$((sum + num))
             done
             ((tally[$sum]++))
         else
-            # Regular tally for 1 die
+            # regular tally for 1 die
             for num in "${rolled_numbers[@]}"; do
                 ((tally[$num]++))
             done

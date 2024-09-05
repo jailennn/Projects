@@ -132,20 +132,37 @@ calculate_randomness() {
   #echo -e "$outcome\t${outcome_counts[$outcome]}"
 #done"
 # Note: AI provided output has been altered to fully meet my needs.
-run_trials() { # function to run trials and tally results (testing part of code)
-    declare -A tally # associative array declaration
+run_trials() {
+    declare -A tally
+    declare -i double_count=0
+
     for ((i=0; i<$trials; i++)); do
-        # roll the number of dice the user selected earlier and store them
         rolled_numbers=$(roll_dice $num_dice)
 
-        # tally results in the associative array
-        for num in $rolled_numbers; do
-            ((tally[$num]++))
-        done
+        if (( num_dice == 2 )); then
+            sum=$(( ${rolled_numbers[0]} + ${rolled_numbers[1]} ))
+            ((tally[$sum]++))
+
+            # Check for doubles
+            if [[ ${rolled_numbers[0]} -eq ${rolled_numbers[1]} ]]; then
+                ((double_count++))
+            fi
+        else
+            # Regular tally for more than 2 dice
+            for num in $rolled_numbers; do
+                ((tally[$num]++))
+            done
+        fi
     done
+
     sleep 1
-    # call the randomness calculation function for testing statistics
     calculate_randomness
+
+    if (( num_dice == 2 )); then
+        echo "Doubles - $double_count"
+        double_percentage=$(echo "scale=2; $double_count * 100 / $trials" | bc -l)
+        echo "Percentage of doubles rolled: $double_percentage%"
+    fi
 }
 # call to start playing the game
 start_game

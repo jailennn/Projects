@@ -75,7 +75,7 @@ calculate_randomness() {
     
     echo "$trials trials stats($num_dice rolled per trial):"
     sleep 1
-
+    
     # Calculate and display tally stats in order
     for num in $(printf "%s\n" "${!tally[@]}" | sort -n); do
         probabilities[$num]=$(echo "scale=10; ${tally[$num]} / $total_rolls" | bc -l)
@@ -84,14 +84,14 @@ calculate_randomness() {
         echo "$num - ${tally[$num]}, $rounded_percentage%"
     done
 
-    # Odd and even calculation
+    # Odd and even calculation based on rolled numbers
     odds_count=0
     evens_count=0
     for num in "${!tally[@]}"; do
         if (( num % 2 == 1 )); then
-            odds_count=$((odds_count + tally[$rolled_numbers]))
+            odds_count=$((odds_count + tally[$num]))
         else
-            evens_count=$((evens_count + tally[$rolled_numbers]))
+            evens_count=$((evens_count + tally[$num]))
         fi
     done
 

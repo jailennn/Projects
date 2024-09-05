@@ -159,9 +159,8 @@ run_trials() {
     calculate_randomness
 
     if (( num_dice == 2 )); then
-        echo "Doubles - $double_count"
         double_percentage=$(echo "scale=2; $double_count * 100 / $trials" | bc -l)
-        echo "Percentage of doubles rolled: $double_percentage%"
+        echo "doubles - $double_count, $double_percentage%"
     fi
 }
 # call to start playing the game

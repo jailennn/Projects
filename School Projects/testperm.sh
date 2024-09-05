@@ -45,4 +45,4 @@ test_permutations() {
 }
 
 # Set number of trials and dice for testing
-test_permutations 1000 3
+test_permutations 6000 5

@@ -146,41 +146,65 @@ calculate_randomness() {
 run_trials() {
     declare -A tally
     declare -i double_count=0
+    declare -i correlation_count=0
 
+    # Track previous rolls for lagged correlation
+    declare -A previous_rolls
+    
     for ((i=0; i<$trials; i++)); do
         rolled_numbers=($(roll_dice $num_dice))
 
         if (( num_dice == 2 )); then
-            # sum calculation for two dice
+            # Sum calculation for two dice
             sum=$(( ${rolled_numbers[0]} + ${rolled_numbers[1]} ))
             ((tally[$sum]++))
 
-            # check for doubles
+            # Check for doubles
             if [[ ${rolled_numbers[0]} -eq ${rolled_numbers[1]} ]]; then
                 ((double_count++))
             fi
         elif (( num_dice > 2 )); then
-            # tally sums for multiple dice
+            # Tally sums for multiple dice
             sum=0
             for num in "${rolled_numbers[@]}"; do
                 sum=$((sum + num))
             done
             ((tally[$sum]++))
         else
-            # regular tally for 1 die
+            # Regular tally for 1 die
             for num in "${rolled_numbers[@]}"; do
                 ((tally[$num]++))
             done
         fi
+
+        # Lagged correlation test - compare current roll with previous roll
+        if [[ -n ${previous_rolls["$((i-1))"]} ]]; then
+            prev_roll=(${previous_rolls["$((i-1))"]})
+            
+            # Sort both current and previous rolls for permutation check
+            sorted_current=($(echo "${rolled_numbers[@]}" | tr ' ' '\n' | sort -n))
+            sorted_previous=($(echo "${prev_roll[@]}" | tr ' ' '\n' | sort -n))
+
+            if [[ "${sorted_current[*]}" == "${sorted_previous[*]}" ]]; then
+                ((correlation_count++))  # Tally the correlation (repeat)
+            fi
+        fi
+
+        # Store the current roll in previous_rolls for future comparison
+        previous_rolls["$i"]="${rolled_numbers[*]}"
     done
 
     sleep 1
     calculate_randomness
 
+    # Output the number of doubles if 2 dice are rolled
     if (( num_dice == 2 )); then
         double_percentage=$(echo "scale=2; $double_count * 100 / $trials" | bc -l)
         echo "Doubles - $double_count, $double_percentage%"
     fi
+
+    # Output the total number of lagged correlations (repeats)
+    echo "Repeats - $correlation_count"
 }
 # call to start playing the game
 start_game

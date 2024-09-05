@@ -137,10 +137,10 @@ run_trials() {
     declare -i double_count=0
 
     for ((i=0; i<$trials; i++)); do
-        rolled_numbers=$(roll_dice $num_dice)
+        rolled_numbers=( $(roll_dice $num_dice) )  # Split the results into an array
 
         if (( num_dice == 2 )); then
-            sum=$(( ${rolled_numbers[0]} + ${rolled_numbers[1]} ))
+            sum=$(( rolled_numbers[0] + rolled_numbers[1] )) 
             ((tally[$sum]++))
 
             # Check for doubles
@@ -149,7 +149,7 @@ run_trials() {
             fi
         else
             # Regular tally for more than 2 dice
-            for num in $rolled_numbers; do
+            for num in "${rolled_numbers[@]}"; do  # Loop through array elements
                 ((tally[$num]++))
             done
         fi

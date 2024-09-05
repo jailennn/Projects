@@ -71,53 +71,45 @@ start_game() { # function to begin playing game
 calculate_randomness() {
     declare -A probabilities
     entropy=0
-    total_rolls=$trials  # Total rolls are simply the number of trials
-
+    total_rolls=$((trials * num_dice))
+    
     echo "$trials trials stats($num_dice rolled per trial):"
     sleep 1
+    
+    # Calculate and display tally stats in order
+    for num in $(printf "%s\n" "${!tally[@]}" | sort -n); do
+        probabilities[$num]=$(echo "scale=10; ${tally[$num]} / $total_rolls" | bc -l)
+        percentage=$(echo "scale=2; ${probabilities[$num]} * 100" | bc -l)
+        rounded_percentage=$(printf "%.2f" "$percentage")
+        echo "$num - ${tally[$num]}, $rounded_percentage%"
+    done
 
-    if (( num_dice == 1 )); then
-        # Calculation for 1 die
-        for num in $(seq 1 6); do
-            probabilities[$num]=$(echo "scale=10; ${tally[$num]} / $total_rolls" | bc -l)
-            percentage=$(echo "scale=2; ${probabilities[$num]} * 100" | bc -l)
-            rounded_percentage=$(printf "%.2f" "$percentage")
-            echo "$num - ${tally[$num]}, $rounded_percentage%"
-        done
+    # Odd and even calculation
+    odds_count=0
+    evens_count=0
+    for num in "${!tally[@]}"; do
+        if (( num % 2 == 1 )); then
+            odds_count=$((odds_count + tally[$num]))
+        else
+            evens_count=$((evens_count + tally[$num]))
+        fi
+    done
 
-        # Calculate entropy
-        for prob in "${probabilities[@]}"; do
-            if (( $(echo "$prob > 0" | bc -l) )); then
-                entropy=$(echo "scale=10; $entropy - $prob * l($prob) / l(2)" | bc -l)
-            fi
-        done
-        round_num=$(printf "%.2f" "$entropy")
-        sleep 1
-        echo "Entropy value - $round_num bits"
-    else
-        # Output sums tally for more than 1 die
-        for sum in $(seq $min_sum $max_sum); do
-            if [[ -n ${tally[$sum]} ]]; then
-                percentage=$(echo "scale=2; ${tally[$sum]} * 100 / $trials" | bc -l)
-                rounded_percentage=$(printf "%.2f" "$percentage")
-                echo "$sum - ${tally[$sum]}, $rounded_percentage%"
-            fi
-        done
+    # Display odds and evens percentages
+    odd_percentage=$(echo "scale=2; $odds_count * 100 / $total_rolls" | bc -l)
+    even_percentage=$(echo "scale=2; $evens_count * 100 / $total_rolls" | bc -l)
+    echo "Odds - $odd_percentage%"
+    echo "Evens - $even_percentage%"
 
-        # Even and odd checks
-        even_count=0
-        odd_count=0
-        for sum in $(seq $min_sum $max_sum); do
-            if (( sum % 2 == 0 )); then
-                even_count=$((even_count + ${tally[$sum]:-0}))
-            else
-                odd_count=$((odd_count + ${tally[$sum]:-0}))
-            fi
-        done
-
-        echo "Even sums total: $even_count, $(echo "scale=2; $even_count * 100 / $trials" | bc -l)%"
-        echo "Odd sums total: $odd_count, $(echo "scale=2; $odd_count * 100 / $trials" | bc -l)%"
-    fi
+    # Entropy calculation
+    for prob in "${probabilities[@]}"; do
+        if (( $(echo "$prob > 0" | bc -l) )); then
+            entropy=$(echo "scale=10; $entropy - $prob * l($prob)/l(2)" | bc -l)
+        fi
+    done
+    round_num=$(printf "%.2f" "$entropy")
+    sleep 1
+    echo "Entropy value - $round_num bits"
 }
 # AI assistant was used to help wrtie the following section of code.
 # My prompt: "How can I test multiple trials of rolling 5 dice and tally the results for each possible outcome using a bash function and loop"

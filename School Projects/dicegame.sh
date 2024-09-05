@@ -132,15 +132,15 @@ calculate_randomness() {
   #echo -e "$outcome\t${outcome_counts[$outcome]}"
 #done"
 # Note: AI provided output has been altered to fully meet my needs.
-
 run_trials() {
     declare -A tally
     declare -i double_count=0
 
     for ((i=0; i<$trials; i++)); do
-        rolled_numbers=$(roll_dice $num_dice)
+        rolled_numbers=($(roll_dice $num_dice))
 
         if (( num_dice == 2 )); then
+            # Sum calculation for two dice
             sum=$(( ${rolled_numbers[0]} + ${rolled_numbers[1]} ))
             ((tally[$sum]++))
 
@@ -149,6 +149,7 @@ run_trials() {
                 ((double_count++))
             fi
         elif (( num_dice > 2 )); then
+            # Tally sums for multiple dice
             sum=0
             for num in "${rolled_numbers[@]}"; do
                 sum=$((sum + num))
@@ -156,7 +157,7 @@ run_trials() {
             ((tally[$sum]++))
         else
             # Regular tally for 1 die
-            for num in $rolled_numbers; do
+            for num in "${rolled_numbers[@]}"; do
                 ((tally[$num]++))
             done
         fi

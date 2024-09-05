@@ -72,7 +72,7 @@ calculate_randomness() {
     declare -A probabilities
     entropy=0
     total_rolls=$((trials * num_dice))
-    
+
     echo "$trials trials stats($num_dice rolled per trial):"
     sleep 1
     
@@ -96,8 +96,15 @@ calculate_randomness() {
     done
 
     # Display odds and evens percentages
-    odd_percentage=$(echo "scale=2; $odds_count * 100 / $total_rolls" | bc -l)
-    even_percentage=$(echo "scale=2; $evens_count * 100 / $total_rolls" | bc -l)
+    total_counts=$((odds_count + evens_count))
+    if (( total_counts > 0 )); then
+        odd_percentage=$(echo "scale=2; $odds_count * 100 / $total_counts" | bc -l)
+        even_percentage=$(echo "scale=2; $evens_count * 100 / $total_counts" | bc -l)
+    else
+        odd_percentage=0
+        even_percentage=0
+    fi
+
     echo "Odds - $odd_percentage%"
     echo "Evens - $even_percentage%"
 

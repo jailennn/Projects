@@ -132,37 +132,31 @@ calculate_randomness() {
   #echo -e "$outcome\t${outcome_counts[$outcome]}"
 #done"
 # Note: AI provided output has been altered to fully meet my needs.
-run_trials() { # function to run trials and tally results (testing part of code)
+
+run_trials() {
     declare -A tally
     declare -i double_count=0
-    declare -i identical_rolls_count=0
-    declare -a previous_rolls
 
     for ((i=0; i<$trials; i++)); do
         rolled_numbers=$(roll_dice $num_dice)
-        roll_array=($rolled_numbers)  # Convert the rolled numbers to an array for easier manipulation
-
-        # Check for identical rolls
-        if (( i > 0 )); then
-            previous_roll_array=(${previous_rolls[$((i-1))]})  # Get the previous roll
-            if [[ "${roll_array[@]}" == "${previous_roll_array[@]}" ]]; then
-                ((identical_rolls_count++))
-            fi
-        fi
-
-        previous_rolls[$i]="$rolled_numbers"  # Store the current roll for future comparison
 
         if (( num_dice == 2 )); then
-            sum=$(( ${roll_array[0]} + ${roll_array[1]} ))
+            sum=$(( ${rolled_numbers[0]} + ${rolled_numbers[1]} ))
             ((tally[$sum]++))
 
             # Check for doubles
-            if [[ ${roll_array[0]} -eq ${roll_array[1]} ]]; then
+            if [[ ${rolled_numbers[0]} -eq ${rolled_numbers[1]} ]]; then
                 ((double_count++))
             fi
+        elif (( num_dice > 2 )); then
+            sum=0
+            for num in "${rolled_numbers[@]}"; do
+                sum=$((sum + num))
+            done
+            ((tally[$sum]++))
         else
-            # Regular tally for more than 2 dice
-            for num in "${roll_array[@]}"; do
+            # Regular tally for 1 die
+            for num in $rolled_numbers; do
                 ((tally[$num]++))
             done
         fi
@@ -173,13 +167,9 @@ run_trials() { # function to run trials and tally results (testing part of code)
 
     if (( num_dice == 2 )); then
         double_percentage=$(echo "scale=2; $double_count * 100 / $trials" | bc -l)
-        echo "Doubles - $double_count, $double_percentage%"
+        echo "Doubles - $diuble_count, $double_percentage%"
     fi
-    # Output the number of identical rolls
-    identical_rolls_percentage=$(echo "scale=2; $identical_rolls_count * 100 / $trials" | bc -l)
-    echo "Identical rolls - $identical_rolls_count, $identical_rolls_percentage%"
 }
-
 # call to start playing the game
 start_game
 run_trials

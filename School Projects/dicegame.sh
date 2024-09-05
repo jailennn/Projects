@@ -102,7 +102,7 @@ calculate_randomness() {
     echo "Evens - $even_percentage%"
 
     # Entropy calculation for more than 1 die
-    if (( num_dice > 1 )); then
+    if (( num_dice == 1 )); then
         entropy=0
         for prob in "${probabilities[@]}"; do
             if (( $(echo "$prob > 0" | bc -l) )); then

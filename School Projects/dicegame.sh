@@ -89,9 +89,9 @@ calculate_randomness() {
     evens_count=0
     for num in "${!tally[@]}"; do
         if (( num % 2 == 1 )); then
-            odds_count=$((odds_count + tally[$num]))
+            odds_count=$((odds_count + tally[$rolled_numbers]))
         else
-            evens_count=$((evens_count + tally[$num]))
+            evens_count=$((evens_count + tally[$rolled_numbers]))
         fi
     done
 

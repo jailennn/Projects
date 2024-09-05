@@ -72,10 +72,10 @@ calculate_randomness() {
     declare -A probabilities
     entropy=0
     total_rolls=$((trials * num_dice))
-
+    
     echo "$trials trials stats($num_dice rolled per trial):"
     sleep 1
-    
+
     # Calculate and display tally stats in order
     for num in $(printf "%s\n" "${!tally[@]}" | sort -n); do
         probabilities[$num]=$(echo "scale=10; ${tally[$num]} / $total_rolls" | bc -l)
@@ -101,15 +101,15 @@ calculate_randomness() {
     echo "Odds - $odd_percentage%"
     echo "Evens - $even_percentage%"
 
-    # Entropy calculation for more than 1 die
+    # Entropy calculation if 1 die is rolled
     if (( num_dice == 1 )); then
-        entropy=0
         for prob in "${probabilities[@]}"; do
             if (( $(echo "$prob > 0" | bc -l) )); then
                 entropy=$(echo "scale=10; $entropy - $prob * l($prob)/l(2)" | bc -l)
             fi
         done
         round_num=$(printf "%.2f" "$entropy")
+        sleep 1
         echo "Entropy value - $round_num bits"
     fi
 }

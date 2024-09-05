@@ -167,7 +167,7 @@ run_trials() {
 
     if (( num_dice == 2 )); then
         double_percentage=$(echo "scale=2; $double_count * 100 / $trials" | bc -l)
-        echo "Doubles - $diuble_count, $double_percentage%"
+        echo "Doubles - $double_count, $double_percentage%"
     fi
 }
 # call to start playing the game

@@ -177,7 +177,7 @@ run_trials() { # function to run trials and tally results (testing part of code)
     fi
     # Output the number of identical rolls
     identical_rolls_percentage=$(echo "scale=2; $identical_rolls_count * 100 / $trials" | bc -l)
-    echo "Percentage of identical rolls: $identical_rolls_percentage%"
+    echo "Identical rolls - $identical_rolls_count, $identical_rolls_percentage%"
 }
 
 # call to start playing the game

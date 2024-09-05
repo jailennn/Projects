@@ -71,33 +71,40 @@ start_game() { # function to begin playing game
 calculate_randomness() {
     declare -A probabilities
     entropy=0
-    total_rolls=$((trials * num_dice))  # Total rolls based on trials and dice
-
+    total_rolls=$((trials * num_dice))
+    
     echo "$trials trials stats($num_dice rolled per trial):"
     sleep 1
+    
+    # Calculate and display tally stats in order
+    for num in $(printf "%s\n" "${!tally[@]}" | sort -n); do
+        probabilities[$num]=$(echo "scale=10; ${tally[$num]} / $total_rolls" | bc -l)
+        percentage=$(echo "scale=2; ${probabilities[$num]} * 100" | bc -l)
+        rounded_percentage=$(printf "%.2f" "$percentage")
+        echo "$num - ${tally[$num]}, $rounded_percentage%"
+    done
 
-    if (( num_dice == 1 )); then
-        # Regular calculation for 1 die
-        for num in $(seq 1 6); do
-            probabilities[$num]=$(echo "scale=10; ${tally[$num]} / $total_rolls" | bc -l)
-            percentage=$(echo "scale=2; ${probabilities[$num]} * 100" | bc -l)
-            rounded_percentage=$(printf "%.2f" "$percentage")
-            echo "$num - ${tally[$num]}, $rounded_percentage%"
-        done
-    else
-        # Calculation for sums
-        for sum in "${!tally[@]}"; do
-            probabilities[$sum]=$(echo "scale=10; ${tally[$sum]} / $total_rolls" | bc -l)
-            percentage=$(echo "scale=2; ${probabilities[$sum]} * 100" | bc -l)
-            rounded_percentage=$(printf "%.2f" "$percentage")
-            echo "$sum - ${tally[$sum]}, $rounded_percentage%"
-        done
-    fi
+    # Odd and even calculation
+    odds_count=0
+    evens_count=0
+    for num in "${!tally[@]}"; do
+        if (( num % 2 == 1 )); then
+            odds_count=$((odds_count + tally[$num]))
+        else
+            evens_count=$((evens_count + tally[$num]))
+        fi
+    done
 
-    # Calculate entropy
+    # Display odds and evens percentages
+    odd_percentage=$(echo "scale=2; $odds_count * 100 / $total_rolls" | bc -l)
+    even_percentage=$(echo "scale=2; $evens_count * 100 / $total_rolls" | bc -l)
+    echo "Odds - $odd_percentage%"
+    echo "Evens - $even_percentage%"
+
+    # Entropy calculation
     for prob in "${probabilities[@]}"; do
         if (( $(echo "$prob > 0" | bc -l) )); then
-            entropy=$(echo "scale=10; $entropy - $prob * l($prob) / l(2)" | bc -l)
+            entropy=$(echo "scale=10; $entropy - $prob * l($prob)/l(2)" | bc -l)
         fi
     done
     round_num=$(printf "%.2f" "$entropy")

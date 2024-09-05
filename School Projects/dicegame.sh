@@ -72,7 +72,7 @@ calculate_randomness() {
     declare -A probabilities
     entropy=0
     total_rolls=$((trials * num_dice))
-    
+
     echo "$trials trials stats($num_dice rolled per trial):"
     sleep 1
     
@@ -101,15 +101,17 @@ calculate_randomness() {
     echo "Odds - $odd_percentage%"
     echo "Evens - $even_percentage%"
 
-    # Entropy calculation
-    for prob in "${probabilities[@]}"; do
-        if (( $(echo "$prob > 0" | bc -l) )); then
-            entropy=$(echo "scale=10; $entropy - $prob * l($prob)/l(2)" | bc -l)
-        fi
-    done
-    round_num=$(printf "%.2f" "$entropy")
-    sleep 1
-    echo "Entropy value - $round_num bits"
+    # Entropy calculation for more than 1 die
+    if (( num_dice > 1 )); then
+        entropy=0
+        for prob in "${probabilities[@]}"; do
+            if (( $(echo "$prob > 0" | bc -l) )); then
+                entropy=$(echo "scale=10; $entropy - $prob * l($prob)/l(2)" | bc -l)
+            fi
+        done
+        round_num=$(printf "%.2f" "$entropy")
+        echo "Entropy value - $round_num bits"
+    fi
 }
 # AI assistant was used to help wrtie the following section of code.
 # My prompt: "How can I test multiple trials of rolling 5 dice and tally the results for each possible outcome using a bash function and loop"

@@ -78,7 +78,7 @@ calculate_randomness() {
     
     # calculate and display tally stats in order
     for num in $(printf "%s\n" "${!tally[@]}" | sort -n); do
-        probabilities[$num]=$(echo "scale=10; ${tally[$num]} / $total_rolls" | bc -l)
+        probabilities[$num]=$(echo "scale=10; ${tally[$num]} / $trials" | bc -l)
         percentage=$(echo "scale=2; ${probabilities[$num]} * 100" | bc -l)
         rounded_percentage=$(printf "%.2f" "$percentage")
         echo "$num - ${tally[$num]}, $rounded_percentage%"

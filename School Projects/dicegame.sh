@@ -177,11 +177,25 @@ run_trials() {
             done
         fi
 
-        # Lagged correlation test - compare current roll with previous roll
-        if [[ -n ${previous_rolls["$((i-1))"]} ]]; then
-            prev_roll=(${previous_rolls["$((i-1))"]})
+        # Lagged correlation test - compare current roll with the last 1 or 2 rolls
+        if (( i >= 2 )); then
+            # Compare with the last two rolls
+            prev_roll_1=(${previous_rolls["$((i-1))"]})
+            prev_roll_2=(${previous_rolls["$((i-2))"]})
             
             # Sort both current and previous rolls for permutation check
+            sorted_current=($(echo "${rolled_numbers[@]}" | tr ' ' '\n' | sort -n))
+            sorted_prev_1=($(echo "${prev_roll_1[@]}" | tr ' ' '\n' | sort -n))
+            sorted_prev_2=($(echo "${prev_roll_2[@]}" | tr ' ' '\n' | sort -n))
+
+            # Check if current roll matches either of the last two
+            if [[ "${sorted_current[*]}" == "${sorted_prev_1[*]}" || "${sorted_current[*]}" == "${sorted_prev_2[*]}" ]]; then
+                ((correlation_count++))  # Tally the correlation (repeat)
+            fi
+        elif (( i == 1 )); then
+            # Only compare with the first roll
+            prev_roll=(${previous_rolls["$((i-1))"]})
+
             sorted_current=($(echo "${rolled_numbers[@]}" | tr ' ' '\n' | sort -n))
             sorted_previous=($(echo "${prev_roll[@]}" | tr ' ' '\n' | sort -n))
 

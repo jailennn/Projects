@@ -177,41 +177,41 @@ run_trials() {
                 ((tally[$num]++))
             done
 
-            # Check for sequential patterns only if 1 die is rolled
-            if (( i >= 2 )); then
-                # Compare with the last two rolls
-                prev_roll_1=(${previous_rolls["$((i-1))"]})
-                prev_roll_2=(${previous_rolls["$((i-2))"]})
+if (( num_dice == 1 )); then
+    # Check for sequential patterns only if 1 die is rolled
+    if (( i >= 2 )); then
+        # Compare with the last two rolls
+        prev_roll_1=(${previous_rolls["$((i-1))"]})
+        prev_roll_2=(${previous_rolls["$((i-2))"]})
 
-                # Sort current and previous rolls for permutation check
-                sorted_current=($(echo "${rolled_numbers[@]}" | tr ' ' '\n' | sort -n))
-                sorted_prev_1=($(echo "${prev_roll_1[@]}" | tr ' ' '\n' | sort -n))
-                sorted_prev_2=($(echo "${prev_roll_2[@]}" | tr ' ' '\n' | sort -n))
+        # Sort current and previous rolls for permutation check
+        sorted_current=($(echo "${rolled_numbers[@]}" | tr ' ' '\n' | sort -n))
+        sorted_prev_1=($(echo "${prev_roll_1[@]}" | tr ' ' '\n' | sort -n))
+        sorted_prev_2=($(echo "${prev_roll_2[@]}" | tr ' ' '\n' | sort -n))
 
-                # Check for sequential patterns (ascending or descending)
-                if [[ "${rolled_numbers[@]}" == $(seq "${rolled_numbers[0]}" "${rolled_numbers[$((num_dice-1))]}") ]]; then
-                    ((sequential_count++))
-                elif [[ "${rolled_numbers[@]}" == $(seq -s ' ' -f "%.0f" "${rolled_numbers[0]}" -1 "${rolled_numbers[$((num_dice-1))]}") ]]; then
-                    ((sequential_count++))
-                fi
-
-                # Check if current roll matches either of the last two
-                if [[ "${sorted_current[*]}" == "${sorted_prev_1[*]}" || "${sorted_current[*]}" == "${sorted_prev_2[*]}" ]]; then
-                    ((correlation_count++))  # Tally the correlation (repeat)
-                fi
-            elif (( i == 1 )); then
-                # Only compare with the first roll
-                prev_roll=(${previous_rolls["$((i-1))"]})
-
-                sorted_current=($(echo "${rolled_numbers[@]}" | tr ' ' '\n' | sort -n))
-                sorted_previous=($(echo "${prev_roll[@]}" | tr ' ' '\n' | sort -n))
-
-                if [[ "${sorted_current[*]}" == "${sorted_previous[*]}" ]]; then
-                    ((correlation_count++))  # Tally the correlation (repeat)
-                fi
-            fi
+        # Check for sequential patterns (ascending or descending)
+        if [[ "${rolled_numbers[@]}" == $(seq "${rolled_numbers[0]}" "${rolled_numbers[$((num_dice-1))]}") ]]; then
+            ((sequential_count++))
+        elif [[ "${rolled_numbers[@]}" == $(seq -s ' ' -f "%.0f" "${rolled_numbers[0]}" -1 "${rolled_numbers[$((num_dice-1))]}") ]]; then
+            ((sequential_count++))
         fi
 
+        # Check if current roll matches either of the last two
+        if [[ "${sorted_current[*]}" == "${sorted_prev_1[*]}" || "${sorted_current[*]}" == "${sorted_prev_2[*]}" ]]; then
+            ((correlation_count++))  # Tally the correlation (repeat)
+        fi
+    elif (( i == 1 )); then
+        # Only compare with the first roll
+        prev_roll=(${previous_rolls["$((i-1))"]})
+
+        sorted_current=($(echo "${rolled_numbers[@]}" | tr ' ' '\n' | sort -n))
+        sorted_previous=($(echo "${prev_roll[@]}" | tr ' ' '\n' | sort -n))
+
+        if [[ "${sorted_current[*]}" == "${sorted_previous[*]}" ]]; then
+            ((correlation_count++))  # Tally the correlation (repeat)
+        fi
+    fi
+fi
         # Store the current roll in previous_rolls for future comparison
         previous_rolls["$i"]="${rolled_numbers[*]}"
     done

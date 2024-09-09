@@ -211,11 +211,9 @@ if (( num_dice == 1 )); then
             ((correlation_count++))  # Tally the correlation (repeat)
         fi
     fi
-fi
         # Store the current roll in previous_rolls for future comparison
         previous_rolls["$i"]="${rolled_numbers[*]}"
     done
-
     sleep 1
     calculate_randomness
 

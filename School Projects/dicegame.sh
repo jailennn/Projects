@@ -217,7 +217,7 @@ run_trials() {
                 previous_rolls["$i"]="${rolled_numbers[*]}"
             fi
         fi
-    done
+    done  # <-- This is the closing 'done' for the for loop
 
     sleep 1
     calculate_randomness
@@ -232,8 +232,10 @@ run_trials() {
     correlation_percentage=$(echo "scale=2; $correlation_count * 100 / $trials" | bc -l)
     echo "Repeats - $correlation_count, $correlation_percentage%"
 
-    # Output the total number of sequential patterns detected
-    echo "Sequential Rolls - $sequential_count"
+    # Output the total number of sequential patterns detected, only if 1 die is rolled
+    if (( num_dice == 1 )); then
+        echo "Sequential Rolls - $sequential_count"
+    fi
 }
 # call to start playing the game
 start_game

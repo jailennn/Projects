@@ -154,6 +154,7 @@ run_trials() {
 
     for ((i=0; i<$trials; i++)); do
         rolled_numbers=($(roll_dice $num_dice))
+        sorted_current=$(printf "%s\n" "${rolled_numbers[@]}" | sort -n | tr '\n' ' ')
 
         if (( num_dice == 2 )); then
             # Sum calculation for two dice
@@ -175,15 +176,15 @@ run_trials() {
 
             # Check for lagged correlation (repeats)
             if (( i >= 1 )); then
-                current_sorted=$(printf "%s\n" "${rolled_numbers[@]}" | sort -n | tr '\n' ' ')
-                prev_sorted=($(echo "${previous_rolls["$((i-1))"]}" | tr ' ' '\n' | sort -n | tr '\n' ' '))
+                prev_sorted=$(echo "${previous_rolls["$((i-1))"]}" | tr ' ' '\n' | sort -n | tr '\n' ' ')
                 
-                if [[ "${current_sorted}" == "${prev_sorted}" ]]; then
+                if [[ "${sorted_current}" == "${prev_sorted}" ]]; then
                     ((correlation_count++))
                 fi
             fi
+            
             # Store the current roll in previous_rolls for future comparison
-            previous_rolls["$i"]=$(printf "%s " "${rolled_numbers[@]}")
+            previous_rolls["$i"]="${sorted_current}"
             
         else
             # Regular tally for 1 die
@@ -198,7 +199,6 @@ run_trials() {
                     prev_roll_1=${previous_rolls["$((i-1))"]}
                     prev_roll_2=${previous_rolls["$((i-2))"]}
 
-                    # Check for ascending sequential pattern (current roll is exactly 1 more than the previous one)
                     if [[ "$rolled_numbers" -eq "$((prev_roll_1 + 1))" && "$rolled_numbers" -eq "$((prev_roll_2 + 2))" ]]; then
                         ((sequential_count++))
                     fi

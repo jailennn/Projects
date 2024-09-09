@@ -147,6 +147,7 @@ run_trials() {
     declare -A tally
     declare -i double_count=0
     declare -i correlation_count=0
+    declare -i sequential_count=0
 
     # Track previous rolls for lagged correlation
     declare -A previous_rolls
@@ -188,6 +189,15 @@ run_trials() {
             sorted_prev_1=($(echo "${prev_roll_1[@]}" | tr ' ' '\n' | sort -n))
             sorted_prev_2=($(echo "${prev_roll_2[@]}" | tr ' ' '\n' | sort -n))
 
+            # Check for sequential patterns (ascending or descending)
+            if [[ "${rolled_numbers[@]}" == $(seq "${rolled_numbers[0]}" "${rolled_numbers[$((num_dice-1))]}") ]]; then
+                ((sequential_count++))
+                echo "Sequential pattern detected (ascending)"
+            elif [[ "${rolled_numbers[@]}" == $(seq -s ' ' -f "%.0f" "${rolled_numbers[0]}" -1 "${rolled_numbers[$((num_dice-1))]}") ]]; then
+                ((sequential_count++))
+                echo "Sequential pattern detected (descending)"
+            fi
+
             # Check if current roll matches either of the last two
             if [[ "${sorted_current[*]}" == "${sorted_prev_1[*]}" || "${sorted_current[*]}" == "${sorted_prev_2[*]}" ]]; then
                 ((correlation_count++))  # Tally the correlation (repeat)
@@ -220,6 +230,9 @@ run_trials() {
     # Output the total number of lagged correlations (repeats)
     correlation_percentage=$(echo "scale=2; $correlation_count * 100 / $trials" | bc -l)
     echo "Repeats - $correlation_count, $correlation_percentage%"
+    
+    # Output the total number of sequential patterns detected
+    echo "Sequential Rolls - $sequential_count"
 }
 # call to start playing the game
 start_game

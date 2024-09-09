@@ -145,14 +145,16 @@ calculate_randomness() {
 # Note: AI provided output has been altered to fully meet my needs.
 run_trials() {
     declare -A tally
-    declare -A previous_rolls
     declare -i double_count=0
     declare -i correlation_count=0
     declare -i sequential_count=0
 
+    # Track previous rolls for lagged correlation
+    declare -A previous_rolls
+
     for ((i=0; i<$trials; i++)); do
         rolled_numbers=($(roll_dice $num_dice))
-        sorted_roll=$(echo "${rolled_numbers[@]}" | tr ' ' '\n' | sort -n | tr '\n' ' ')
+        sorted_current=$(printf "%s\n" "${rolled_numbers[@]}" | sort -n | tr '\n' ' ' | sed 's/ $//')
 
         if (( num_dice == 2 )); then
             # Sum calculation for two dice
@@ -164,10 +166,6 @@ run_trials() {
                 ((double_count++))
             fi
 
-            # Check for repeats
-            if [[ -n "${previous_rolls[$sorted_roll]}" ]]; then
-                ((correlation_count++))
-            fi
         elif (( num_dice > 2 )); then
             # Tally sums for multiple dice
             sum=0
@@ -175,57 +173,70 @@ run_trials() {
                 sum=$((sum + num))
             done
             ((tally[$sum]++))
+
+            # Check for lagged correlation (repeats)
+            if (( i >= 1 )); then
+                prev_sorted=$(echo "${previous_rolls["$((i-1))"]}" | tr ' ' '\n' | sort -n | tr '\n' ' ' | sed 's/ $//')
+                
+                if [[ "${sorted_current}" == "${prev_sorted}" ]]; then
+                    ((correlation_count++))
+                fi
+            fi
+            
+            # Store the current roll in previous_rolls for future comparison
+            previous_rolls["$i"]="${sorted_current}"
+            
         else
             # Regular tally for 1 die
             for num in "${rolled_numbers[@]}"; do
                 ((tally[$num]++))
             done
 
-            # Check for sequential patterns only if 1 die is rolled
+            # Check for ascending sequential patterns only if 1 die is rolled
             if (( num_dice == 1 )); then
                 if (( i >= 2 )); then
-                    prev_roll_1=(${previous_rolls["$((i-1))"]})
-                    prev_roll_2=(${previous_rolls["$((i-2))"]})
+                    prev_roll_1=${previous_rolls["$((i-1))"]}
+                    prev_roll_2=${previous_rolls["$((i-2))"]}
 
-                    sorted_current=($(echo "${rolled_numbers[@]}" | tr ' ' '\n' | sort -n))
-                    sorted_prev_1=($(echo "${prev_roll_1[@]}" | tr ' ' '\n' | sort -n))
-                    sorted_prev_2=($(echo "${prev_roll_2[@]}" | tr ' ' '\n' | sort -n))
-
-                    if [[ "${sorted_current[@]}" == $(seq "${sorted_current[0]}" "${sorted_current[0]}") ]]; then
+                    if [[ "$rolled_numbers" -eq "$((prev_roll_1 + 1))" && "$rolled_numbers" -eq "$((prev_roll_2 + 2))" ]]; then
                         ((sequential_count++))
                     fi
 
-                    if [[ "${sorted_current[*]}" == "${sorted_prev_1[*]}" || "${sorted_current[*]}" == "${sorted_prev_2[*]}" ]]; then
-                        ((correlation_count++))
+                    # Check if current roll matches either of the last two
+                    if [[ "$rolled_numbers" -eq "$prev_roll_1" || "$rolled_numbers" -eq "$prev_roll_2" ]]; then
+                        ((correlation_count++))  # Tally the correlation (repeat)
                     fi
                 elif (( i == 1 )); then
-                    prev_roll=(${previous_rolls["$((i-1))"]})
+                    # Only compare with the first roll
+                    prev_roll=${previous_rolls["$((i-1))"]}
 
-                    sorted_current=($(echo "${rolled_numbers[@]}" | tr ' ' '\n' | sort -n))
-                    sorted_previous=($(echo "${prev_roll[@]}" | tr ' ' '\n' | sort -n))
-
-                    if [[ "${sorted_current[*]}" == "${sorted_previous[*]}" ]]; then
-                        ((correlation_count++))
+                    if [[ "$rolled_numbers" -eq "$prev_roll" ]]; then
+                        ((correlation_count++))  # Tally the correlation (repeat)
                     fi
                 fi
+                # Store the current roll in previous_rolls for future comparison
+                previous_rolls["$i"]="$rolled_numbers"
             fi
         fi
-
-        # Store the current roll in previous_rolls for future comparison
-        previous_rolls["$sorted_roll"]=1
     done
+
     sleep 1
     calculate_randomness
 
+    # Output the number of doubles if 2 dice are rolled
     if (( num_dice == 2 )); then
         double_percentage=$(echo "scale=2; $double_count * 100 / $trials" | bc -l)
         echo "Doubles - $double_count, $double_percentage%"
     fi
 
+    # Output the total number of lagged correlations (repeats)
     correlation_percentage=$(echo "scale=2; $correlation_count * 100 / $trials" | bc -l)
     echo "Repeats - $correlation_count, $correlation_percentage%"
-    
-    echo "Sequential Rolls - $sequential_count"
+
+    # Output the total number of ascending sequential patterns detected, only if 1 die is rolled
+    if (( num_dice == 1 )); then
+        echo "Sequential Rolls - $sequential_count"
+    fi
 }
 # call to start playing the game
 start_game

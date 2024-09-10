@@ -1,5 +1,4 @@
 #!/bin/bash
-# client Section
 # function to get user input for # of dice, also checking that the input is an integer 1-5.
 get_num_dice() {
     while true; do
@@ -12,6 +11,7 @@ get_num_dice() {
         fi
     done
 }
+
 get_num_trials() { # function to get user input for number of trials.
     while true; do
         echo "How many trials to run? "
@@ -23,6 +23,7 @@ get_num_trials() { # function to get user input for number of trials.
         fi
     done
 }
+
 # function for generating a random integer ranging from 1-6 (rolling a die)
 roll_dice() {
     num_dice=$1
@@ -32,6 +33,7 @@ roll_dice() {
     done
     echo "${results[@]}"
 }
+
 start_game() { # function to begin playing game
     # calls for user input
     get_num_dice
@@ -40,34 +42,7 @@ start_game() { # function to begin playing game
     echo " Rolled - ${rolled_numbers}"
     get_num_trials #prompt for trials after game is played
 }
-# AI assistant was used to help wrtie the following section of code.
-#My prompt: What’s the best way to implement the entropy formula in Bash using logarithm calculation.
-#AI Output:"
-# Check if input file is provided
-#if [ "$#" -ne 1 ]; then
-    #echo "Usage: $0 <probabilities_file>"
-    #exit 1
-#fi
-# File containing probabilities (one per line)
-#PROB_FILE=$1
-# Initialize variables
-#entropy=0
-# Read probabilities from the file
-#while IFS= read -r prob; do
-    # Skip empty lines or lines that do not represent valid probabilities
-    #if [ -z "$prob" ] || [ "$(echo "$prob > 0" | bc)" -eq 0 ]; then
-        #continue
-    #fi
 
-    # Calculate log2(prob) using bc
-    #log2=$(echo "scale=10; l($prob) / l(2)" | bc -l)
-
-    # Update entropy using bc
-    #entropy=$(echo "scale=10; $entropy - ($prob * $log2)" | bc -l)
-#done < "$PROB_FILE"
-# Output the entropy
-#echo "Entropy: $entropy"
-# Note: AI provided output has been altered to fully meet my needs. 
 calculate_randomness() {
     declare -A probabilities
     entropy=0
@@ -76,7 +51,6 @@ calculate_randomness() {
     echo "$trials trials stats($num_dice rolled per trial):"
     sleep 1
     
-    # calculate and display tally stats in order
     for num in $(printf "%s\n" "${!tally[@]}" | sort -n); do
         probabilities[$num]=$(echo "scale=10; ${tally[$num]} / $trials" | bc -l)
         percentage=$(echo "scale=2; ${probabilities[$num]} * 100" | bc -l)
@@ -84,7 +58,6 @@ calculate_randomness() {
         echo "$num - ${tally[$num]}, $rounded_percentage%"
     done
 
-    # odd and even calculation based on rolled numbers
     odds_count=0
     evens_count=0
     for num in "${!tally[@]}"; do
@@ -95,7 +68,6 @@ calculate_randomness() {
         fi
     done
 
-    # display odds and evens percentages
     total_counts=$((odds_count + evens_count))
     if (( total_counts > 0 )); then
         odd_percentage=$(echo "scale=2; $odds_count * 100 / $total_counts" | bc -l)
@@ -108,7 +80,6 @@ calculate_randomness() {
     echo "Odds - $odd_percentage%"
     echo "Evens - $even_percentage%"
 
-    # entropy calculation if 1 die is rolled
     if (( num_dice == 1 )); then
         for prob in "${probabilities[@]}"; do
             if (( $(echo "$prob > 0" | bc -l) )); then
@@ -120,29 +91,7 @@ calculate_randomness() {
         echo "Entropy value - $round_num bits"
     fi
 }
-# AI assistant was used to help wrtie the following section of code.
-# My prompt: "How can I test multiple trials of rolling 5 dice and tally the results for each possible outcome using a bash function and loop"
-#AI Output:"
-#num_trials=1000
-#roll_dice() {
-  #local rolls=()
-  #for _ in {1..5}; do
-    #rolls+=($((RANDOM % 6 + 1)))
-  #done
-  #printf -v outcome "%s " "${rolls[@]}"
-  #outcome=$(echo $outcome | tr ' ' '\n' | sort -n | tr '\n' ' ' | xargs)
-  #echo "$outcome"
-#}
-#for ((i=1; i<=num_trials; i++)); do
-  #outcome=$(roll_dice)
-  #((outcome_counts["$outcome"]++))
-#done
-# Print the results
-#echo "Outcome\tCount"
-#for outcome in "${!outcome_counts[@]}"; do
-  #echo -e "$outcome\t${outcome_counts[$outcome]}"
-#done"
-# Note: AI provided output has been altered to fully meet my needs.
+
 run_trials() {
     declare -A tally
     declare -i double_count=0
@@ -157,87 +106,84 @@ run_trials() {
         sorted_current=$(printf "%s\n" "${rolled_numbers[@]}" | sort -n | tr '\n' ' ' | sed 's/ $//')
 
         if (( num_dice == 2 )); then
-            # Sum calculation for two dice
             sum=$(( ${rolled_numbers[0]} + ${rolled_numbers[1]} ))
             ((tally[$sum]++))
 
-            # Check for doubles
             if [[ ${rolled_numbers[0]} -eq ${rolled_numbers[1]} ]]; then
                 ((double_count++))
             fi
 
+            if (( i >= 1 )); then
+                prev_sorted="${previous_rolls["$((i-1))"]}"
+
+                # Compare current sorted roll with the previous one for repeats
+                if [[ "$sorted_current" == "$prev_sorted" ]]; then
+                    ((correlation_count++))
+                fi
+            fi
+
+            # Store the current roll in previous_rolls for future comparison
+            previous_rolls["$i"]="$sorted_current"
+
         elif (( num_dice > 2 )); then
-            # Tally sums for multiple dice
             sum=0
             for num in "${rolled_numbers[@]}"; do
                 sum=$((sum + num))
             done
             ((tally[$sum]++))
 
-            # Check for lagged correlation (repeats)
             if (( i >= 1 )); then
-                prev_sorted=$(echo "${previous_rolls["$((i-1))"]}" | tr ' ' '\n' | sort -n | tr '\n' ' ' | sed 's/ $//')
-                
-                if [[ "${sorted_current}" == "${prev_sorted}" ]]; then
+                prev_sorted="${previous_rolls["$((i-1))"]}"
+
+                if [[ "$sorted_current" == "$prev_sorted" ]]; then
                     ((correlation_count++))
                 fi
             fi
-            
-            # Store the current roll in previous_rolls for future comparison
-            previous_rolls["$i"]="${sorted_current}"
-            
+
+            previous_rolls["$i"]="$sorted_current"
+
         else
-            # Regular tally for 1 die
             for num in "${rolled_numbers[@]}"; do
                 ((tally[$num]++))
             done
 
-            # Check for ascending sequential patterns only if 1 die is rolled
-            if (( num_dice == 1 )); then
-                if (( i >= 2 )); then
-                    prev_roll_1=${previous_rolls["$((i-1))"]}
-                    prev_roll_2=${previous_rolls["$((i-2))"]}
+            if (( i >= 2 )); then
+                prev_roll_1=${previous_rolls["$((i-1))"]}
+                prev_roll_2=${previous_rolls["$((i-2))"]}
 
-                    if [[ "$rolled_numbers" -eq "$((prev_roll_1 + 1))" && "$rolled_numbers" -eq "$((prev_roll_2 + 2))" ]]; then
-                        ((sequential_count++))
-                    fi
-
-                    # Check if current roll matches either of the last two
-                    if [[ "$rolled_numbers" -eq "$prev_roll_1" || "$rolled_numbers" -eq "$prev_roll_2" ]]; then
-                        ((correlation_count++))  # Tally the correlation (repeat)
-                    fi
-                elif (( i == 1 )); then
-                    # Only compare with the first roll
-                    prev_roll=${previous_rolls["$((i-1))"]}
-
-                    if [[ "$rolled_numbers" -eq "$prev_roll" ]]; then
-                        ((correlation_count++))  # Tally the correlation (repeat)
-                    fi
+                if [[ "$rolled_numbers" -eq "$((prev_roll_1 + 1))" && "$rolled_numbers" -eq "$((prev_roll_2 + 2))" ]]; then
+                    ((sequential_count++))
                 fi
-                # Store the current roll in previous_rolls for future comparison
-                previous_rolls["$i"]="$rolled_numbers"
+
+                if [[ "$rolled_numbers" -eq "$prev_roll_1" || "$rolled_numbers" -eq "$prev_roll_2" ]]; then
+                    ((correlation_count++))
+                fi
+            elif (( i == 1 )); then
+                prev_roll=${previous_rolls["$((i-1))"]}
+
+                if [[ "$rolled_numbers" -eq "$prev_roll" ]]; then
+                    ((correlation_count++))
+                fi
             fi
+            previous_rolls["$i"]="$rolled_numbers"
         fi
     done
 
     sleep 1
     calculate_randomness
 
-    # Output the number of doubles if 2 dice are rolled
     if (( num_dice == 2 )); then
         double_percentage=$(echo "scale=2; $double_count * 100 / $trials" | bc -l)
         echo "Doubles - $double_count, $double_percentage%"
     fi
 
-    # Output the total number of lagged correlations (repeats)
     correlation_percentage=$(echo "scale=2; $correlation_count * 100 / $trials" | bc -l)
     echo "Repeats - $correlation_count, $correlation_percentage%"
 
-    # Output the total number of ascending sequential patterns detected, only if 1 die is rolled
     if (( num_dice == 1 )); then
         echo "Sequential Rolls - $sequential_count"
     fi
 }
-# call to start playing the game
+
 start_game
 run_trials

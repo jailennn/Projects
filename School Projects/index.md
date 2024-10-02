@@ -1,4 +1,4 @@
-# Dice Rolling Randomness Testing Script
+# Dice Rolling Randomness Testing Script (workingdicegame.sh)
 ## Project Overview
 
 This script was developed for a **Software Development and Testing** class to simulate rolling dice, analyze the randomness of the results, and calculate statistical metrics such as probabilities, entropy, and repeat patterns across multiple trials. 

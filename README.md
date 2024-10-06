@@ -29,7 +29,7 @@ Stay tuned for upcoming professional projects where I'll apply the skills and kn
 Some of the technologies and tools featured in this repository include:
 - **Languages**: Python, Java, C++, Bash, HTML/CSS, JavaScript
 - **Tools**: Git, VSCode, Apache,
-- **Databases**: MySQL, PHP
+- **Databases**: SQL, PHP
 - **OS'**: WSL Ubuntu, Windows
 
 ---

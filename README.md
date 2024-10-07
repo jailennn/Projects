@@ -6,18 +6,18 @@ Welcome to my personal GitHub repository! This space is a collection of my work,
 
 ## **School Projects**
 Here, you'll find a range of projects I’ve completed throughout my academic career. These projects demonstrate my skills in:
-- Cybersecurity & Networking
-- Software Development & Testing
+- Cybersecurity & Networking tasks
+- Software development & testing
 - Programming in multiple languages
-- Web Development
+- Web design & development
 
-Each project includes  documentation outlining the purpose, key features, and usage!
+Each project includes documentation outlining its purpose, key features, and usage!
 
 ---
 
 ## **Career Projects**
 In addition to schoolwork, this repository will serve as the foundation for future projects that align with my professional goals. As I continue my career, I'll be using this repository to:
-- Develop and refine new skills
+- Develop and refine newly learned skills
 - Collaborate with future team members
 - Build a portfolio to showcase all project work
 
@@ -26,11 +26,11 @@ Stay tuned for upcoming professional projects where I'll apply the skills and kn
 ---
 
 ## **Technologies & Tools**
-Some of the technologies and tools featured in this repository include:
+Some of the technologies and tools that will be featured in this repository include:
 - **Languages**: Python, Java, C++, Bash, HTML/CSS, JavaScript
-- **Tools**: Git, VSCode, Apache,
+- **Tools**: Git, VSCode, VirtualBox
 - **Databases**: SQL, PHP
-- **OS'**: WSL Ubuntu, Windows
+- **OS'**: WSL Ubuntu, Windows, MacOS
 
 ---
 

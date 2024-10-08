@@ -56,16 +56,23 @@ closed_time=$(date -d "$closed_start" +%s)
 # Determine the registration category
 if [ "$input_time" -ge "$not_open_time" ] && [ "$input_time" -lt "$super_early_time" ]; then
     echo "Registration Not Open"
+    echo "This registration period is not open for the year $race_year."
 elif [ "$input_time" -ge "$super_early_time" ] && [ "$input_time" -lt "$early_time" ]; then
     echo "Super Early Registration"
+    echo "This registration period opened on October 1 of $prev_year."
 elif [ "$input_time" -ge "$early_time" ] && [ "$input_time" -lt "$registration_time" ]; then
     echo "Early Registration"
+    echo "This registration period opened on November 1 of $prev_year."
 elif [ "$input_time" -ge "$registration_time" ] && [ "$input_time" -lt "$late_time" ]; then
     echo "Registration"
+    echo "This registration period opened on March 1 of $race_year."
 elif [ "$input_time" -ge "$late_time" ] && [ "$input_time" -lt "$TDay_time" ]; then
     echo "Late Registration"
+    echo "This registration period opened on April 2 of $race_year."
 elif [ "$input_time" -ge "$TDay_time" ] && [ "$input_time" -lt "$closed_time" ]; then
     echo "Registration Closed"
+    echo "This registration period was open until May 1 of $race_year."
 else
     echo "Registration Not Open"
+    echo "This registration period is not open for the year $race_year."
 fi

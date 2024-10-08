@@ -90,7 +90,7 @@ elif [ "$input_time" -ge "$early_time" ] && [ "$input_time" -le "$early_end_time
     echo "Early Registration"
     echo "This registration period opened on November 1 of $prev_year and ends on $early_end."
 elif [ "$input_time" -ge "$registration_time" ] && [ "$input_time" -lt "$late_time" ]; then
-    echo "Registration"
+    echo "Baseline Registration"
     echo "This registration period opened on March 1 of $race_year."
 elif [ "$input_time" -ge "$late_time" ] && [ "$input_time" -le "$TDay_time" ]; then
     echo "Late Registration"

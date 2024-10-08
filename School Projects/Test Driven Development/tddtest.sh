@@ -1,5 +1,15 @@
 #!/bin/bash
 
+# Function to check if a year is a leap year
+is_leap_year() {
+    local year=$1
+    if (( (year % 4 == 0 && year % 100 != 0) || year % 400 == 0 )); then
+        return 0  # True (leap year)
+    else
+        return 1  # False (not a leap year)
+    fi
+}
+
 # Prompt user for input timestamp (format: YYYYMMDD HH:MM:SS)
 echo "Enter timestamp (format: YYYYMMDD HH:MM:SS):"
 read input_timestamp
@@ -21,9 +31,13 @@ prev_year=$((race_year - 1))
 
 # Check if the input timestamp is in the current year or the previous year
 if [ "$input_year" -eq "$race_year" ] || [ "$input_year" -eq "$prev_year" ]; then
-    # Set early registration end date to February 29
-    early_end="${race_year}0229 23:59:59"  # Treat Feb 29 as the end date
-    
+    # Define early registration end date based on leap year check
+    if is_leap_year "$race_year"; then
+        early_end="${race_year}0229 23:59:59"  # Leap year: Feb 29
+    else
+        early_end="${race_year}0228 23:59:59"  # Non-leap year: Feb 28
+    fi
+
     not_open_start="${race_year}0601 00:00:00"   # Not Open: June 1
     super_early_start="${prev_year}1001 00:00:00" # Super Early: Oct 1 of previous year
     early_start="${prev_year}1101 00:00:00"       # Early Registration: Nov 1 of previous year
@@ -56,7 +70,7 @@ elif [ "$input_time" -ge "$super_early_time" ] && [ "$input_time" -lt "$early_ti
     echo "This registration period opened on October 1 of $prev_year."
 elif [ "$input_time" -ge "$early_time" ] && [ "$input_time" -le "$early_end_time" ]; then
     echo "Early Registration"
-    echo "This registration period opened on November 1 of $prev_year and ends on February 29, 2025."
+    echo "This registration period opened on November 1 of $prev_year and ends on $early_end."
 elif [ "$input_time" -ge "$registration_time" ] && [ "$input_time" -lt "$late_time" ]; then
     echo "Registration"
     echo "This registration period opened on March 1 of $race_year."

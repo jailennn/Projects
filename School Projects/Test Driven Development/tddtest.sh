@@ -19,24 +19,15 @@ TDay_time=$(date -d "$TDay" +%s)
 # To get the previous year
 prev_year=$((race_year - 1))
 
-# Check if the input timestamp is in the current year or the next year
-if [ "$input_year" -eq "$race_year" ]; then
-    # If the input timestamp is in the current race year
+# Check if the input timestamp is in the current year or the previous year
+if [ "$input_year" -eq "$race_year" ] || [ "$input_year" -eq "$prev_year" ]; then
+    # If the input timestamp is in the current race year or the previous year
     not_open_start="${race_year}0601 00:00:00"   # Not Open: June 1
-    super_early_start="${prev_year}1001 00:00:00" # Super Early: Oct 1
-    early_start="${prev_year}1101 00:00:00"       # Early Registration: Nov 1
-    registration_start="${race_year}0301 00:00:00" # Regular registration starts: Mar 1
-    late_start="${race_year}0402 00:00:00"         # Late registration starts: Apr 2
-    closed_start="${race_year}0501 23:59:59"       # Registration closed after TDay (inclusive)
-
-elif [ "$input_year" -eq "$((race_year - 1))" ]; then
-    # If the input timestamp is in the previous year
-    not_open_start="${input_year}0601 00:00:00"   # Not Open: June 1
-    super_early_start="${input_year}1001 00:00:00" # Super Early: Oct 1
-    early_start="${input_year}1101 00:00:00"       # Early Registration: Nov 1
-    registration_start="${race_year}0301 00:00:00" # Regular registration starts: Mar 1
-    late_start="${race_year}0402 00:00:00"         # Late registration starts: Apr 2
-    closed_start="${race_year}0501 23:59:59"       # Registration closed after TDay (inclusive)
+    super_early_start="${prev_year}1001 00:00:00" # Super Early: Oct 1 of previous year
+    early_start="${prev_year}1101 00:00:00"       # Early Registration: Nov 1 of previous year
+    registration_start="${race_year}0301 00:00:00" # Regular registration starts: Mar 1 of race year
+    late_start="${race_year}0402 00:00:00"         # Late registration starts: Apr 2 of race year
+    closed_start="${race_year}0501 23:59:59"       # Registration closed after TDay
 
 else
     # If the input timestamp is outside the valid years

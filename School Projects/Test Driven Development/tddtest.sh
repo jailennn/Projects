@@ -21,7 +21,9 @@ prev_year=$((race_year - 1))
 
 # Check if the input timestamp is in the current year or the previous year
 if [ "$input_year" -eq "$race_year" ] || [ "$input_year" -eq "$prev_year" ]; then
-    # If the input timestamp is in the current race year or the previous year
+    # Set early registration end date to February 29
+    early_end="${race_year}0229 23:59:59"  # Treat Feb 29 as the end date
+    
     not_open_start="${race_year}0601 00:00:00"   # Not Open: June 1
     super_early_start="${prev_year}1001 00:00:00" # Super Early: Oct 1 of previous year
     early_start="${prev_year}1101 00:00:00"       # Early Registration: Nov 1 of previous year
@@ -39,8 +41,10 @@ fi
 not_open_time=$(date -d "$not_open_start" +%s)
 super_early_time=$(date -d "$super_early_start" +%s)
 early_time=$(date -d "$early_start" +%s)
+early_end_time=$(date -d "$early_end" +%s)
 registration_time=$(date -d "$registration_start" +%s)
 late_time=$(date -d "$late_start" +%s)
+TDay_time=$(date -d "$TDay" +%s)
 closed_time=$(date -d "$closed_start" +%s)
 
 # Determine the registration category
@@ -50,9 +54,9 @@ if [ "$input_time" -ge "$not_open_time" ]; then
 elif [ "$input_time" -ge "$super_early_time" ] && [ "$input_time" -lt "$early_time" ]; then
     echo "Super Early Registration"
     echo "This registration period opened on October 1 of $prev_year."
-elif [ "$input_time" -ge "$early_time" ] && [ "$input_time" -lt "$registration_time" ]; then
+elif [ "$input_time" -ge "$early_time" ] && [ "$input_time" -le "$early_end_time" ]; then
     echo "Early Registration"
-    echo "This registration period opened on November 1 of $prev_year."
+    echo "This registration period opened on November 1 of $prev_year and ends on February 29, 2025."
 elif [ "$input_time" -ge "$registration_time" ] && [ "$input_time" -lt "$late_time" ]; then
     echo "Registration"
     echo "This registration period opened on March 1 of $race_year."

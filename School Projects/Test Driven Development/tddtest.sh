@@ -12,7 +12,7 @@ input_time=$(date -d "$input_timestamp" +%s)
 
 # Define the race year and TDay
 race_year=2025
-TDay="${race_year}0501 00:00:00"
+TDay="${race_year}0501 23:59:59"
 
 # Convert TDay to Unix time
 TDay_time=$(date -d "$TDay" +%s)

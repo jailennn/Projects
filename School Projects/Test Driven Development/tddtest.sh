@@ -27,7 +27,7 @@ if [ "$input_year" -eq "$race_year" ]; then
     early_start="${prev_year}1101 00:00:00"       # Early Registration: Nov 1
     registration_start="${race_year}0301 00:00:00" # Regular registration starts: Mar 1
     late_start="${race_year}0402 00:00:00"         # Late registration starts: Apr 2
-    closed_start="${race_year}0502 00:00:00"       # Registration closed after TDay (exclusive)
+    closed_start="${race_year}0501 23:59:59"       # Registration closed after TDay (inclusive)
 
 elif [ "$input_year" -eq "$((race_year - 1))" ]; then
     # If the input timestamp is in the previous year
@@ -36,7 +36,7 @@ elif [ "$input_year" -eq "$((race_year - 1))" ]; then
     early_start="${input_year}1101 00:00:00"       # Early Registration: Nov 1
     registration_start="${race_year}0301 00:00:00" # Regular registration starts: Mar 1
     late_start="${race_year}0402 00:00:00"         # Late registration starts: Apr 2
-    closed_start="${race_year}0502 00:00:00"       # Registration closed after TDay (exclusive)
+    closed_start="${race_year}0501 23:59:59"       # Registration closed after TDay (inclusive)
 
 else
     # If the input timestamp is outside the valid years
@@ -53,7 +53,7 @@ late_time=$(date -d "$late_start" +%s)
 closed_time=$(date -d "$closed_start" +%s)
 
 # Determine the registration category
-if [ "$input_time" -ge "$not_open_time" ] && [ "$input_time" -lt "$super_early_time" ]; then
+if [ "$input_time" -ge "$not_open_time" ]; then
     echo "Registration Not Open"
     echo "This registration period is not open for the year $race_year."
 elif [ "$input_time" -ge "$super_early_time" ] && [ "$input_time" -lt "$early_time" ]; then
@@ -68,7 +68,7 @@ elif [ "$input_time" -ge "$registration_time" ] && [ "$input_time" -lt "$late_ti
 elif [ "$input_time" -ge "$late_time" ] && [ "$input_time" -le "$TDay_time" ]; then
     echo "Late Registration"
     echo "This registration period opened on April 2 of $race_year."
-elif [ "$input_time" -gt "$TDay_time" ] && [ "$input_time" -lt "$closed_time" ]; then
+elif [ "$input_time" -gt "$TDay_time" ]; then
     echo "Registration Closed"
     echo "This registration period was open until May 1 of $race_year."
 else

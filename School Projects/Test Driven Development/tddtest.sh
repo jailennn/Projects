@@ -16,17 +16,25 @@ read input_timestamp
 
 # Extract the year from the input timestamp
 input_year=$(date -d "$input_timestamp" +%Y)
+input_month=$(date -d "$input_timestamp" +%m)
 
 # Convert input timestamp to Unix time (seconds since epoch)
 input_time=$(date -d "$input_timestamp" +%s)
 
+# Determine the race year dynamically based on timestamp
+if [[ "$input_month" -ge 10 ]]; then
+    race_year=$((input_year + 1))  # If input is between Oct 1 and Dec 31, use next year as race year
+else
+    race_year=$input_year  # Otherwise, race year is the input year
+fi
+
 # Define the race year and TDay
-race_year=2025
 TDay="${race_year}0501 23:59:59"  # Include the full day for TDay
 
 # Convert TDay to Unix time
 TDay_time=$(date -d "$TDay" +%s)
-# To get the previous year
+
+# Define the previous year
 prev_year=$((race_year - 1))
 
 # Check if the input timestamp is in the current year or the previous year

@@ -82,5 +82,5 @@ elif [ "$input_time" -gt "$TDay_time" ]; then
     echo "This registration period was open until May 1 of $race_year."
 else
     echo "Registration Not Open"
-    echo "This registration period is not open for the year $input_year."
+    echo "This registration period is not open for the year $race_year."
 fi

@@ -12,7 +12,7 @@ input_time=$(date -d "$input_timestamp" +%s)
 
 # Define the race year and TDay
 race_year=2025
-TDay="${race_year}0501 23:59:59"
+TDay="${race_year}0501 23:59:59"  # Include the full day for TDay
 
 # Convert TDay to Unix time
 TDay_time=$(date -d "$TDay" +%s)
@@ -27,16 +27,16 @@ if [ "$input_year" -eq "$race_year" ]; then
     early_start="${prev_year}1101 00:00:00"       # Early Registration: Nov 1
     registration_start="${race_year}0301 00:00:00" # Regular registration starts: Mar 1
     late_start="${race_year}0402 00:00:00"         # Late registration starts: Apr 2
-    closed_start="${race_year}0502 00:00:00"       # Registration closed after TDay
+    closed_start="${race_year}0502 00:00:00"       # Registration closed after TDay (exclusive)
 
 elif [ "$input_year" -eq "$((race_year - 1))" ]; then
-    # If the input timestamp is in the next race year
+    # If the input timestamp is in the previous year
     not_open_start="${input_year}0601 00:00:00"   # Not Open: June 1
     super_early_start="${input_year}1001 00:00:00" # Super Early: Oct 1
     early_start="${input_year}1101 00:00:00"       # Early Registration: Nov 1
     registration_start="${race_year}0301 00:00:00" # Regular registration starts: Mar 1
     late_start="${race_year}0402 00:00:00"         # Late registration starts: Apr 2
-    closed_start="${race_year}0502 00:00:00"       # Registration closed after TDay
+    closed_start="${race_year}0502 00:00:00"       # Registration closed after TDay (exclusive)
 
 else
     # If the input timestamp is outside the valid years
@@ -50,7 +50,6 @@ super_early_time=$(date -d "$super_early_start" +%s)
 early_time=$(date -d "$early_start" +%s)
 registration_time=$(date -d "$registration_start" +%s)
 late_time=$(date -d "$late_start" +%s)
-TDay_time=$(date -d "$TDay" +%s)
 closed_time=$(date -d "$closed_start" +%s)
 
 # Determine the registration category
@@ -66,10 +65,10 @@ elif [ "$input_time" -ge "$early_time" ] && [ "$input_time" -lt "$registration_t
 elif [ "$input_time" -ge "$registration_time" ] && [ "$input_time" -lt "$late_time" ]; then
     echo "Registration"
     echo "This registration period opened on March 1 of $race_year."
-elif [ "$input_time" -ge "$late_time" ] && [ "$input_time" -lt "$TDay_time" ]; then
+elif [ "$input_time" -ge "$late_time" ] && [ "$input_time" -le "$TDay_time" ]; then
     echo "Late Registration"
     echo "This registration period opened on April 2 of $race_year."
-elif [ "$input_time" -ge "$TDay_time" ] && [ "$input_time" -lt "$closed_time" ]; then
+elif [ "$input_time" -gt "$TDay_time" ] && [ "$input_time" -lt "$closed_time" ]; then
     echo "Registration Closed"
     echo "This registration period was open until May 1 of $race_year."
 else

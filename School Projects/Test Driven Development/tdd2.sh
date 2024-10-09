@@ -65,8 +65,8 @@ if [ "$input_year" -eq "$race_year" ] || [ "$input_year" -eq "$prev_year" ]; the
     fi
 
     not_open_start="${race_year}0601 00:00:00"   # Not Open: June 1
-    super_early_start="${race_year}1001 00:00:00" # Super Early: Oct 1 of previous year
-    early_start="${race_year}1101 00:00:00"       # Early Registration: Nov 1 of previous year
+    super_early_start="${prev_year}1001 00:00:00" # Super Early: Oct 1 of previous year
+    early_start="${prev_year}1101 00:00:00"       # Early Registration: Nov 1 of previous year
     registration_start="${race_year}0301 00:00:00" # Regular registration starts: Mar 1 of race year
     late_start="${race_year}0402 00:00:00"         # Late registration starts: Apr 2 of race year
     closed_start="${race_year}0501 23:59:59"       # Registration closed after TDay

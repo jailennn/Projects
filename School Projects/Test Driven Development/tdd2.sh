@@ -38,14 +38,19 @@ get_first_thursday_of_may() {
 calculate_age() {
     local dob=$1
     local race_day=$2
-    local dob_date=$(date -d "$dob" +%Y%m%d)
-    local race_date=$(date -d "$race_day" +%Y%m%d)
+    local dob_year=$(echo "$dob" | cut -c1-4)
+    local dob_month=$(echo "$dob" | cut -c5-6)
+    local dob_day=$(echo "$dob" | cut -c7-8)
+
+    local race_year=$(echo "$race_day" | cut -c1-4)
+    local race_month=$(echo "$race_day" | cut -c5-6)
+    local race_day_num=$(echo "$race_day" | cut -c7-8)
 
     # Calculate the age on race day
-    local age=$(( $(date -d "$race_day" +%Y) - $(date -d "$dob" +%Y) ))
+    local age=$(( race_year - dob_year ))
 
     # Adjust age if the birthday hasn't occurred yet in the race year
-    if [[ "$race_date" < "$dob_date" ]]; then
+    if (( race_month < dob_month )) || (( race_month == dob_month && race_day_num < dob_day )); then
         age=$((age - 1))
     fi
 

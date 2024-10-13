@@ -160,8 +160,9 @@ if [ -z "$dob_time" ]; then
 fi
 
 # Calculate the runner's age on race days
-race_day_5k_10k=$(date -d "$TDay + 2 days" +%Y%m%d)
-race_day_full_half=$(date -d "$TDay + 3 days" +%Y%m%d)
+# Add 2 and 3 days to TDay
+race_day_5k_10k=$(date -d "$(echo $TDay | cut -d' ' -f1) + 2 days" +%Y%m%d)
+race_day_full_half=$(date -d "$(echo $TDay | cut -d' ' -f1) + 3 days" +%Y%m%d)
 
 # Calculate age for both race days
 age_5k_10k=$(calculate_age "$dob" "$race_day_5k_10k")

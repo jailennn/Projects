@@ -45,7 +45,7 @@ calculate_age() {
     local age=$(( $(date -d "$race_day" +%Y) - $(date -d "$dob" +%Y) ))
 
     # Adjust age if the birthday hasn't occurred yet in the race year
-    if [[ "$dob_date" > "$race_date" ]]; then
+    if [[ "$race_date" < "$dob_date" ]]; then
         age=$((age - 1))
     fi
 
@@ -169,5 +169,5 @@ age_5k_10k=$(calculate_age "$dob" "$race_day_5k_10k")
 age_full_half=$(calculate_age "$dob" "$race_day_full_half")
 
 # Display the runner's age on race days
-echo "The runner will be $age_5k_10k years old on 5K/10K race day ($race_day_5k_10k)."
-echo "The runner will be $age_full_half years old on full/half marathon race day ($race_day_full_half)."
+echo "The runner's age on 5K/10K race day ($race_day_5k_10k) will be: $age_5k_10k years."
+echo "The runner's age on full/half marathon race day ($race_day_full_half) will be: $age_full_half years."

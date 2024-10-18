@@ -155,7 +155,7 @@ echo "Enter your email address:"
 read email_address
 
 # Prepare the race roster CSV file
-csv_file="race_roster.csv"
+csv_file="~/race_roster.csv"
 
 # Check if the CSV file exists, if not, create it with a header
 if [ ! -f "$csv_file" ]; then

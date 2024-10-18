@@ -1,107 +1,55 @@
 #!/bin/bash
 
-# Filepath for the race roster CSV
-race_roster_file=~/race_roster.csv
+# Prompt for registration timestamp
+read -p "Enter timestamp (format: YYYYMMDD HH:MM:SS): " timestamp
 
-# Function to check if a year is a leap year
-is_leap_year() {
-    local year=$1
-    if (( (year % 4 == 0 && year % 100 != 0) || year % 400 == 0 )); then
-        return 0  # True (leap year)
-    else
-        return 1  # False (not a leap year)
-    fi
-}
+# Check registration period based on timestamp
+if [[ "$timestamp" < "20241001" ]]; then
+    echo "Too Early Registration"
+elif [[ "$timestamp" < "20241101" ]]; then
+    echo "Super Early Registration"
+else
+    echo "Regular Registration"
+fi
 
-# Function to calculate age based on date of birth and a given date
+# Prompt for date of birth
+read -p "Enter date of birth (format: YYYYMMDD): " dob
+
+# Extract year, month, and day of birth
+dob_year=${dob:0:4}
+dob_month=${dob:4:2}
+dob_day=${dob:6:2}
+
+# Race dates
+race_day1="20250503"  # May 3, 2025
+race_day2="20250504"  # May 4, 2025
+
+# Function to calculate age on a given race day
 calculate_age() {
-    local dob=$1
-    local race_day=$2
-    local dob_year=$(echo "$dob" | cut -c1-4)
-    local dob_month=$(echo "$dob" | cut -c5-6)
-    local dob_day=$(echo "$dob" | cut -c7-8)
+    local birth_date="$1"
+    local race_date="$2"
+    birth_year=${birth_date:0:4}
+    birth_month=${birth_date:4:2}
+    birth_day=${birth_date:6:2}
+    race_year=${race_date:0:4}
+    race_month=${race_date:4:2}
+    race_day=${race_date:6:2}
 
-    local race_year=$(echo "$race_day" | cut -c1-4)
-    local race_month=$(echo "$race_day" | cut -c5-6)
-    local race_day_num=$(echo "$race_day" | cut -c7-8)
+    # Calculate age
+    age=$((race_year - birth_year))
 
-    # Calculate the age on race day
-    local age=$(( race_year - dob_year ))
-
-    # Adjust age if the birthday hasn't occurred yet in the race year
-    if (( race_month < dob_month )) || (( race_month == dob_month && race_day_num < dob_day )); then
+    # Check if the race day is before the user's birthday
+    if [[ "$race_month" -lt "$birth_month" || ( "$race_month" -eq "$birth_month" && "$race_day" -lt "$birth_day" ) ]]; then
         age=$((age - 1))
     fi
 
-    echo "$age"
+    echo $age
 }
 
-# Function to find the first Thursday of May for a given year
-get_first_thursday_of_may() {
-    local year=$1
-    # Start at May 1st of the given year
-    local may_first="${year}0501"
-    # Find the weekday of May 1st (0 = Sunday, 6 = Saturday)
-    local weekday=$(date -d "$may_first" +%w)
-    
-    # Calculate how many days to add to reach the first Thursday (weekday = 4)
-    if [ "$weekday" -le 4 ]; then
-        local offset=$((4 - weekday))
-    else
-        local offset=$((7 - weekday + 4))
-    fi
-    
-    # Calculate the first Thursday of May
-    first_thursday=$(date -d "$may_first +$offset days" +"%Y%m%d")
-    echo "$first_thursday"
-}
+# Calculate age on race day 1 (May 3, 2025)
+age_on_race_day1=$(calculate_age "$dob" "$race_day1")
+echo "The runner's age on 5K/10K race day ($race_day1) will be: $age_on_race_day1 years."
 
-# Prompt the user for registration details
-echo "Enter First Name:"
-read first_name
-echo "Enter Last Name:"
-read last_name
-echo "Enter Date of Birth (format: YYYYMMDD):"
-read dob
-echo "Enter Gender:"
-read gender
-echo "Enter Email Address:"
-read email
-
-# Automatically generate the registration timestamp (current date and time)
-registration_timestamp=$(date +"%Y%m%d %H:%M:%S")
-
-# Determine the race year dynamically based on the current date
-current_year=$(date +%Y)
-current_month=$(date +%m)
-
-# Calculate race year based on the current date
-if [ "$current_month" -ge 10 ]; then
-    # If the month is October or later, race year is the next year
-    race_year=$((current_year + 1))
-else
-    # Otherwise, race year is the current year
-    race_year=$current_year
-fi
-
-# Get TDay (first Thursday of May for the determined race year)
-TDay=$(get_first_thursday_of_may "$race_year")
-
-# Calculate the race days: Saturday (TDay + 2) and Sunday (TDay + 3)
-race_day_5k_10k=$(date -d "$TDay + 2 days" +%Y%m%d)
-race_day_full_half=$(date -d "$TDay + 3 days" +%Y%m%d)
-
-# Calculate the runner's age on race days
-age_5k_10k=$(calculate_age "$dob" "$race_day_5k_10k")
-age_full_half=$(calculate_age "$dob" "$race_day_full_half")
-
-# Check if the race roster file exists, if not, create it with headers
-if [ ! -f "$race_roster_file" ]; then
-    echo "First Name,Last Name,Age on 5K/10K Day,Age on Full/Half Marathon Day,Gender,Email Address,Registration Timestamp" > "$race_roster_file"
-fi
-
-# Append the runner's data to the race roster CSV
-echo "$first_name,$last_name,$age_5k_10k,$age_full_half,$gender,$email,$registration_timestamp" >> "$race_roster_file"
-
-# Confirm the runner was added
-echo "Runner successfully added to the race roster."
+# Calculate age on race day 2 (May 4, 2025)
+age_on_race_day2=$(calculate_age "$dob" "$race_day2")
+echo "The runner's age on full/half marathon race day ($race_day2) will be: $age_on_race_day2 years."

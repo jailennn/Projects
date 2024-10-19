@@ -151,15 +151,19 @@ read gender
 echo "Enter your email address:"
 read email_address
 
+# Define the path for the race roster files
+roster_directory="$HOME"
+
 # Create roster files
 k_race_files=("5K_Roster.csv" "10K_Roster.csv")
 marathon_files=("Half_Marathon_Roster.csv" "Full_Marathon_Roster.csv")
 
 # Create headers for the rosters if they don't exist
 for file in "${k_race_files[@]}" "${marathon_files[@]}"; do
-    if [ ! -f "$file" ]; then
-        echo "Creating race roster for $file."
-        echo "First Name,Last Name,Gender,Email" > "$file"
+    full_path="$roster_directory/$file"
+    if [ ! -f "$full_path" ]; then
+        echo "Creating race roster for $full_path."
+        echo "First Name,Last Name,Gender,Email" > "$full_path"
     fi
 done
 
@@ -215,24 +219,30 @@ while [ -z "$selected_k_race" ] || [ -z "$selected_marathon" ]; do
                     echo "You can only select one marathon (Half or Full Marathon)."
                 fi
                 ;;
-                
             *)
-                echo "Invalid selection. Please choose between 1 to 4."
+                echo "Invalid selection, please choose from the options provided."
                 ;;
         esac
     done
 done
 
-# Append user information to the respective race rosters
-if [ -n "$selected_k_race" ]; then
-    k_race_file="${selected_k_race// /_}_Roster.csv"
-    echo "$first_name,$last_name,$gender,$email_address" >> "$k_race_file"
+# Save runner's data to appropriate roster files
+if [ "$selected_k_race" == "5K" ]; then
+    echo "$first_name,$last_name,$gender,$email_address" >> "$roster_directory/5K_Roster.csv"
 fi
 
-if [ -n "$selected_marathon" ]; then
-    marathon_file="${selected_marathon// /_}_Roster.csv"
-    echo "$first_name,$last_name,$gender,$email_address" >> "$marathon_file"
+if [ "$selected_k_race" == "10K" ]; then
+    echo "$first_name,$last_name,$gender,$email_address" >> "$roster_directory/10K_Roster.csv"
 fi
 
-echo "You have successfully registered for the $selected_k_race and $selected_marathon."
-echo "Your information has been added to the respective rosters."
+if [ "$selected_marathon" == "Half Marathon" ]; then
+    echo "$first_name,$last_name,$gender,$email_address" >> "$roster_directory/Half_Marathon_Roster.csv"
+fi
+
+if [ "$selected_marathon" == "Full Marathon" ]; then
+    echo "$first_name,$last_name,$gender,$email_address" >> "$roster_directory/Full_Marathon_Roster.csv"
+fi
+
+echo "Registration successful! You have registered for the following races:"
+echo "K Race: $selected_k_race"
+echo "Marathon: $selected_marathon"

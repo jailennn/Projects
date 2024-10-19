@@ -151,6 +151,18 @@ read gender
 echo "Enter your email address:"
 read email_address
 
+# Create roster files
+k_race_files=("5K_Roster.csv" "10K_Roster.csv")
+marathon_files=("Half_Marathon_Roster.csv" "Full_Marathon_Roster.csv")
+
+# Create headers for the rosters if they don't exist
+for file in "${k_race_files[@]}" "${marathon_files[@]}"; do
+    if [ ! -f "$file" ]; then
+        echo "Creating race roster for $file."
+        echo "First Name,Last Name,Gender,Email" > "$file"
+    fi
+done
+
 # Race Selection: Users can select one K race and one marathon
 selected_k_race=""
 selected_marathon=""
@@ -179,6 +191,7 @@ while [ -z "$selected_k_race" ] || [ -z "$selected_marathon" ]; do
                     echo "You can only select one K race (5K or 10K)."
                 fi
                 ;;
+
             2)
                 if [ -z "$selected_k_race" ]; then
                     selected_k_race="10K"
@@ -186,6 +199,7 @@ while [ -z "$selected_k_race" ] || [ -z "$selected_marathon" ]; do
                     echo "You can only select one K race (5K or 10K)."
                 fi
                 ;;
+
             3)
                 if [ -z "$selected_marathon" ]; then
                     selected_marathon="Half Marathon"
@@ -193,6 +207,7 @@ while [ -z "$selected_k_race" ] || [ -z "$selected_marathon" ]; do
                     echo "You can only select one marathon (Half or Full Marathon)."
                 fi
                 ;;
+
             4)
                 if [ -z "$selected_marathon" ]; then
                     selected_marathon="Full Marathon"
@@ -200,15 +215,24 @@ while [ -z "$selected_k_race" ] || [ -z "$selected_marathon" ]; do
                     echo "You can only select one marathon (Half or Full Marathon)."
                 fi
                 ;;
+                
             *)
-                echo "Invalid selection. Please select from 1 to 4."
+                echo "Invalid selection. Please choose between 1 to 4."
                 ;;
         esac
     done
-
-    if [ -z "$selected_k_race" ] || [ -z "$selected_marathon" ]; then
-        echo "Please select both a K race (5K or 10K) and a marathon (Half or Full Marathon)."
-    fi
 done
 
-echo "You have successfully registered for the ${selected_k_race} and the ${selected_marathon}."
+# Append user information to the respective race rosters
+if [ -n "$selected_k_race" ]; then
+    k_race_file="${selected_k_race// /_}_Roster.csv"
+    echo "$first_name,$last_name,$gender,$email_address" >> "$k_race_file"
+fi
+
+if [ -n "$selected_marathon" ]; then
+    marathon_file="${selected_marathon// /_}_Roster.csv"
+    echo "$first_name,$last_name,$gender,$email_address" >> "$marathon_file"
+fi
+
+echo "You have successfully registered for the $selected_k_race and $selected_marathon."
+echo "Your information has been added to the respective rosters."

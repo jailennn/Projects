@@ -59,10 +59,7 @@ read input_timestamp
 
 input_year=$(date -d "$input_timestamp" +%Y)
 input_month=$(date -d "$input_timestamp" +%m)
-input_day=$(date -d "$input_timestamp" +%d)
-
-input_month=$(strip_leading_zero "$input_month")
-input_day=$(strip_leading_zero "$input_day")
+input_day=$(strip_leading_zero $(date -d "$input_timestamp" +%d))
 
 input_time=$(date -d "$input_timestamp" +%s 2>/dev/null)
 
@@ -154,15 +151,16 @@ read gender
 echo "Enter your email address:"
 read email_address
 
-# Race Selection: Users can select one K race and/or one marathon
-selected_races=()
+# Race Selection: Users can select one K race and one marathon
+selected_k_race=""
+selected_marathon=""
 
 echo "Select your race(s):"
 echo "1) 5K"
 echo "2) 10K"
 echo "3) Half Marathon"
 echo "4) Full Marathon"
-echo "You can register for one K race and one marathon."
+echo "You can register for one K race (5K or 10K) and one marathon (Half or Full Marathon)."
 
 read -p "Enter your selection (e.g., 1 3 for 5K and Half Marathon): " race_selection
 
@@ -170,34 +168,34 @@ read -p "Enter your selection (e.g., 1 3 for 5K and Half Marathon): " race_selec
 for race in $race_selection; do
     case $race in
         1)
-            if [[ ! " ${selected_races[@]} " =~ " 5K " ]]; then
-                selected_races+=("5K")
+            if [ -z "$selected_k_race" ]; then
+                selected_k_race="5K"
             else
-                echo "You can only select one K race."
+                echo "You can only select one K race (5K or 10K)."
                 exit 1
             fi
             ;;
         2)
-            if [[ ! " ${selected_races[@]} " =~ " 10K " ]]; then
-                selected_races+=("10K")
+            if [ -z "$selected_k_race" ]; then
+                selected_k_race="10K"
             else
-                echo "You can only select one K race."
+                echo "You can only select one K race (5K or 10K)."
                 exit 1
             fi
             ;;
         3)
-            if [[ ! " ${selected_races[@]} " =~ " Half Marathon " ]]; then
-                selected_races+=("Half Marathon")
+            if [ -z "$selected_marathon" ]; then
+                selected_marathon="Half Marathon"
             else
-                echo "You can only select one marathon."
+                echo "You can only select one marathon (Half or Full Marathon)."
                 exit 1
             fi
             ;;
         4)
-            if [[ ! " ${selected_races[@]} " =~ " Full Marathon " ]]; then
-                selected_races+=("Full Marathon")
+            if [ -z "$selected_marathon" ]; then
+                selected_marathon="Full Marathon"
             else
-                echo "You can only select one marathon."
+                echo "You can only select one marathon (Half or Full Marathon)."
                 exit 1
             fi
             ;;
@@ -209,21 +207,12 @@ for race in $race_selection; do
 done
 
 # Add the runner to the appropriate race roster(s)
-for race in "${selected_races[@]}"; do
-    case $race in
-        "5K")
-            echo "$first_name,$last_name,$gender,$email_address,$age_5k_10k" >> 5k_roster.csv
-            ;;
-        "10K")
-            echo "$first_name,$last_name,$gender,$email_address,$age_5k_10k" >> 10k_roster.csv
-            ;;
-        "Half Marathon")
-            echo "$first_name,$last_name,$gender,$email_address,$age_full_half" >> half_marathon_roster.csv
-            ;;
-        "Full Marathon")
-            echo "$first_name,$last_name,$gender,$email_address,$age_full_half" >> full_marathon_roster.csv
-            ;;
-    esac
-done
+if [ -n "$selected_k_race" ]; then
+    echo "$first_name,$last_name,$gender,$email_address,$age_5k_10k" >> ${selected_k_race,,}_roster.csv
+fi
 
-echo "Registration completed successfully for the following race(s): ${selected_races[@]}."
+if [ -n "$selected_marathon" ]; then
+    echo "$first_name,$last_name,$gender,$email_address,$age_full_half" >> ${selected_marathon,,}_marathon_roster.csv
+fi
+
+echo "Registration completed successfully for the following race(s): ${selected_k_race} ${selected_marathon}"

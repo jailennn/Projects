@@ -163,7 +163,7 @@ for file in "${k_race_files[@]}" "${marathon_files[@]}"; do
     full_path="$roster_directory/$file"
     if [ ! -f "$full_path" ]; then
         echo "Creating race roster for $full_path."
-        echo "First Name,Last Name,Gender,Email" > "$full_path"
+        echo "First Name,Last Name,Gender,Email,Age,Timestamp" > "$full_path"
     fi
 done
 
@@ -226,21 +226,21 @@ while [ -z "$selected_k_race" ] || [ -z "$selected_marathon" ]; do
     done
 done
 
-# Save runner's data to appropriate roster files
+# Save runner's data to appropriate roster files along with their age and timestamp
 if [ "$selected_k_race" == "5K" ]; then
-    echo "$first_name,$last_name,$gender,$email_address" >> "$roster_directory/5K_Roster.csv"
+    echo "$first_name,$last_name,$gender,$email_address,$age_5k_10k,$input_timestamp" >> "$roster_directory/5K_Roster.csv"
 fi
 
 if [ "$selected_k_race" == "10K" ]; then
-    echo "$first_name,$last_name,$gender,$email_address" >> "$roster_directory/10K_Roster.csv"
+    echo "$first_name,$last_name,$gender,$email_address,$age_5k_10k,$input_timestamp" >> "$roster_directory/10K_Roster.csv"
 fi
 
 if [ "$selected_marathon" == "Half Marathon" ]; then
-    echo "$first_name,$last_name,$gender,$email_address" >> "$roster_directory/Half_Marathon_Roster.csv"
+    echo "$first_name,$last_name,$gender,$email_address,$age_full_half,$input_timestamp" >> "$roster_directory/Half_Marathon_Roster.csv"
 fi
 
 if [ "$selected_marathon" == "Full Marathon" ]; then
-    echo "$first_name,$last_name,$gender,$email_address" >> "$roster_directory/Full_Marathon_Roster.csv"
+    echo "$first_name,$last_name,$gender,$email_address,$age_full_half,$input_timestamp" >> "$roster_directory/Full_Marathon_Roster.csv"
 fi
 
 echo "Registration successful! You have registered for the following races:"

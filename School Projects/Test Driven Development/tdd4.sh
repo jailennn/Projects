@@ -155,64 +155,60 @@ read email_address
 selected_k_race=""
 selected_marathon=""
 
-echo "Select your race(s):"
-echo "1) 5K"
-echo "2) 10K"
-echo "3) Half Marathon"
-echo "4) Full Marathon"
-echo "You can register for one K race (5K or 10K) and one marathon (Half or Full Marathon)."
+# Loop until valid selections are made
+while [ -z "$selected_k_race" ] || [ -z "$selected_marathon" ]; do
+    echo "Select your race(s):"
+    echo "1) 5K"
+    echo "2) 10K"
+    echo "3) Half Marathon"
+    echo "4) Full Marathon"
+    echo "You can register for one K race (5K or 10K) and one marathon (Half or Full Marathon)."
 
-read -p "Enter your selection (e.g., 1 3 for 5K and Half Marathon): " race_selection
+    read -p "Enter your selection (e.g., 1 3 for 5K and Half Marathon): " race_selection
 
-# Process the user's race selection
-for race in $race_selection; do
-    case $race in
-        1)
-            if [ -z "$selected_k_race" ]; then
-                selected_k_race="5K"
-            else
-                echo "You can only select one K race (5K or 10K)."
-                exit 1
-            fi
-            ;;
-        2)
-            if [ -z "$selected_k_race" ]; then
-                selected_k_race="10K"
-            else
-                echo "You can only select one K race (5K or 10K)."
-                exit 1
-            fi
-            ;;
-        3)
-            if [ -z "$selected_marathon" ]; then
-                selected_marathon="Half Marathon"
-            else
-                echo "You can only select one marathon (Half or Full Marathon)."
-                exit 1
-            fi
-            ;;
-        4)
-            if [ -z "$selected_marathon" ]; then
-                selected_marathon="Full Marathon"
-            else
-                echo "You can only select one marathon (Half or Full Marathon)."
-                exit 1
-            fi
-            ;;
-        *)
-            echo "Invalid selection. Please select from 1 to 4."
-            exit 1
-            ;;
-    esac
+    # Reset the race choices for each loop iteration
+    selected_k_race=""
+    selected_marathon=""
+
+    for race in $race_selection; do
+        case $race in
+            1)
+                if [ -z "$selected_k_race" ]; then
+                    selected_k_race="5K"
+                else
+                    echo "You can only select one K race (5K or 10K)."
+                fi
+                ;;
+            2)
+                if [ -z "$selected_k_race" ]; then
+                    selected_k_race="10K"
+                else
+                    echo "You can only select one K race (5K or 10K)."
+                fi
+                ;;
+            3)
+                if [ -z "$selected_marathon" ]; then
+                    selected_marathon="Half Marathon"
+                else
+                    echo "You can only select one marathon (Half or Full Marathon)."
+                fi
+                ;;
+            4)
+                if [ -z "$selected_marathon" ]; then
+                    selected_marathon="Full Marathon"
+                else
+                    echo "You can only select one marathon (Half or Full Marathon)."
+                fi
+                ;;
+            *)
+                echo "Invalid selection. Please select from 1 to 4."
+                ;;
+        esac
+    done
+
+    if [ -z "$selected_k_race" ] || [ -z "$selected_marathon" ]; then
+        echo "Please select both a K race (5K or 10K) and a marathon (Half or Full Marathon)."
+    fi
 done
 
-# Add the runner to the appropriate race roster(s)
-if [ -n "$selected_k_race" ]; then
-    echo "$first_name,$last_name,$gender,$email_address,$age_5k_10k" >> ${selected_k_race,,}_roster.csv
-fi
-
-if [ -n "$selected_marathon" ]; then
-    echo "$first_name,$last_name,$gender,$email_address,$age_full_half" >> ${selected_marathon,,}_marathon_roster.csv
-fi
-
-echo "Registration completed successfully for the following race(s): ${selected_k_race} ${selected_marathon}"
+echo "You have successfully registered for the ${selected_k_race} and the ${selected_marathon}."

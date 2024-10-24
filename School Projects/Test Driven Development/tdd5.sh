@@ -1,0 +1,234 @@
+#!/bin/bash
+# Function to check if a year is a leap year
+is_leap_year() {
+    local year=$1
+    if (( (year % 4 == 0 && year % 100 != 0) || year % 400 == 0 )); then
+        return 0  # True (leap year)
+    else
+        return 1  # False (not a leap year)
+    fi
+}
+
+# Function to remove leading zeros
+strip_leading_zero() {
+    echo "$1" | sed 's/^0*//'
+}
+
+# Function to find the first Thursday of May for a given year
+get_first_thursday_of_may() {
+    local year=$1
+    local may_first="${year}0501"
+    local weekday=$(date -d "$may_first" +%w)
+    if [ "$weekday" -le 4 ]; then
+        local offset=$((4 - weekday))
+    else
+        local offset=$((7 - weekday + 4))
+    fi
+    first_thursday=$(date -d "$may_first +$offset days" +"%Y%m%d")
+    echo "$first_thursday"
+}
+
+# Function to calculate age based on date of birth and a given date
+calculate_age() {
+    local dob=$1
+    local race_day=$2
+    local dob_year=$(echo "$dob" | cut -c1-4)
+    local dob_month=$(echo "$dob" | cut -c5-6)
+    local dob_day=$(echo "$dob" | cut -c7-8)
+
+    local race_year=$(echo "$race_day" | cut -c1-4)
+    local race_month=$(echo "$race_day" | cut -c5-6)
+    local race_day_num=$(echo "$race_day" | cut -c7-8)
+
+    dob_month=$(strip_leading_zero "$dob_month")
+    dob_day=$(strip_leading_zero "$dob_day")
+    race_month=$(strip_leading_zero "$race_month")
+    race_day_num=$(strip_leading_zero "$race_day_num")
+
+    local age=$(( race_year - dob_year ))
+    if (( race_month < dob_month )) || (( race_month == dob_month && race_day_num < dob_day )); then
+        age=$((age - 1))
+    fi
+
+    echo "$age"
+}
+
+# Function to calculate race price based on registration timestamp and race type
+calculate_price() {
+    local input_time=$1
+    local race_type=$2
+    
+    if [ "$input_time" -ge "$not_open_time" ]; then
+        echo "Registration Not Open"
+        return
+    fi
+
+    local price=""
+    case "$race_type" in
+        "5K"|"10K")
+            if [ "$input_time" -ge "$super_early_time" ] && [ "$input_time" -lt "$early_time" ]; then
+                price=25  # Super Early 5K/10K price
+            elif [ "$input_time" -ge "$early_time" ] && [ "$input_time" -le "$early_end_time" ]; then
+                price=30  # Early 5K/10K price
+            elif [ "$input_time" -ge "$registration_time" ] && [ "$input_time" -lt "$late_time" ]; then
+                price=35  # Baseline 5K/10K price
+            elif [ "$input_time" -ge "$late_time" ] && [ "$input_time" -le "$TDay_time" ]; then
+                price=45  # Late 5K/10K price
+            fi
+            ;;
+        "Half Marathon"|"Full Marathon")
+            if [ "$input_time" -ge "$super_early_time" ] && [ "$input_time" -lt "$early_time" ]; then
+                price=70  # Super Early Half/Full Marathon price
+            elif [ "$input_time" -ge "$early_time" ] && [ "$input_time" -le "$early_end_time" ]; then
+                price=75  # Early Half/Full Marathon price
+            elif [ "$input_time" -ge "$registration_time" ] && [ "$input_time" -lt "$late_time" ]; then
+                price=85  # Baseline Half/Full Marathon price
+            elif [ "$input_time" -ge "$late_time" ] && [ "$input_time" -le "$TDay_time" ]; then
+                price=100  # Late Half/Full Marathon price
+            fi
+            ;;
+        *)
+            echo "Unknown race type."
+            ;;
+    esac
+    echo "$price"
+}
+
+# Prompt user for input timestamp (format: YYYYMMDD HH:MM:SS)
+echo "Enter timestamp (format: YYYYMMDD HH:MM:SS):"
+read input_timestamp
+
+input_year=$(date -d "$input_timestamp" +%Y)
+input_month=$(date -d "$input_timestamp" +%m)
+input_day=$(strip_leading_zero $(date -d "$input_timestamp" +%d))
+
+input_time=$(date -d "$input_timestamp" +%s 2>/dev/null)
+
+if [ -z "$input_time" ]; then
+    echo "Invalid date format or non-existent date."
+    exit 1
+fi
+
+if [ "$input_month" -ge 10 ]; then
+    race_year=$((input_year + 1))
+else
+    race_year=$input_year
+fi
+
+TDay=$(get_first_thursday_of_may "$race_year")
+TDay="${TDay} 23:59:59"
+
+TDay_time=$(date -d "$TDay" +%s)
+prev_year=$((race_year - 1))
+
+if [ "$input_year" -eq "$race_year" ] || [ "$input_year" -eq "$prev_year" ]; then
+    if is_leap_year "$race_year"; then
+        early_end="${race_year}0229 23:59:59"
+    else
+        early_end="${race_year}0228 23:59:59"
+    fi
+    not_open_start="${race_year}0601 00:00:00"
+    super_early_start="${prev_year}1001 00:00:00"
+    early_start="${prev_year}1101 00:00:00"
+    registration_start="${race_year}0301 00:00:00"
+    late_start="${race_year}0402 00:00:00"
+    closed_start="$TDay"
+else
+    echo "Timestamp is not relevant to the registration periods."
+    exit 0
+fi
+
+not_open_time=$(date -d "$not_open_start" +%s)
+super_early_time=$(date -d "$super_early_start" +%s)
+early_time=$(date -d "$early_start" +%s)
+early_end_time=$(date -d "$early_end" +%s)
+registration_time=$(date -d "$registration_start" +%s)
+late_time=$(date -d "$late_start" +%s)
+closed_time=$(date -d "$closed_start" +%s)
+
+if [ "$input_time" -ge "$not_open_time" ]; then
+    echo "Registration Not Open"
+elif [ "$input_time" -ge "$super_early_time" ] && [ "$input_time" -lt "$early_time" ]; then
+    echo "Super Early Registration"
+elif [ "$input_time" -ge "$early_time" ] && [ "$input_time" -le "$early_end_time" ]; then
+    echo "Early Registration"
+elif [ "$input_time" -ge "$registration_time" ] && [ "$input_time" -lt "$late_time" ]; then
+    echo "Baseline Registration"
+elif [ "$input_time" -ge "$late_time" ] && [ "$input_time" -le "$TDay_time" ]; then
+    echo "Late Registration"
+elif [ "$input_time" -gt "$TDay_time" ]; then
+    echo "Registration Closed"
+else
+    echo "Registration Not Open"
+fi
+
+echo "Enter date of birth (format: YYYYMMDD):"
+read dob
+dob_time=$(date -d "$dob" +%s 2>/dev/null)
+if [ -z "$dob_time" ]; then
+    echo "Invalid date of birth format or non-existent date."
+    exit 1
+fi
+
+race_day_5k_10k=$(date -d "$(echo $TDay | cut -d' ' -f1) + 2 days" +%Y%m%d)
+race_day_full_half=$(date -d "$(echo $TDay | cut -d' ' -f1) + 3 days" +%Y%m%d)
+
+age_5k_10k=$(calculate_age "$dob" "$race_day_5k_10k")
+age_full_half=$(calculate_age "$dob" "$race_day_full_half")
+
+echo "The runner's age on 5K/10K race day ($race_day_5k_10k) will be: $age_5k_10k years."
+echo "The runner's age on full/half marathon race day ($race_day_full_half) will be: $age_full_half years."
+
+# Collect additional user information for the race roster
+echo "Enter your first name:"
+read first_name
+
+echo "Enter your last name:"
+read last_name
+
+echo "Enter your gender:"
+read gender
+
+echo "Enter your email address:"
+read email_address
+
+# Define the path for the race roster files
+roster_directory="$HOME"
+
+# Create roster files
+k_race_files=("5K_Roster.csv" "10K_Roster.csv")
+marathon_files=("Half_Marathon_Roster.csv" "Full_Marathon_Roster.csv")
+
+# Prompt the user for race type
+echo "Enter race type (5K, 10K, Half Marathon, Full Marathon):"
+read race_type
+
+price=$(calculate_price "$input_time" "$race_type")
+
+# Write to the appropriate roster file
+case "$race_type" in
+    "5K")
+        roster_file="${roster_directory}/${k_race_files[0]}"
+        ;;
+    "10K")
+        roster_file="${roster_directory}/${k_race_files[1]}"
+        ;;
+    "Half Marathon")
+        roster_file="${roster_directory}/${marathon_files[0]}"
+        ;;
+    "Full Marathon")
+        roster_file="${roster_directory}/${marathon_files[1]}"
+        ;;
+    *)
+        echo "Invalid race type."
+        exit 1
+        ;;
+esac
+
+if [ "$price" != "Registration Not Open" ]; then
+    echo "$first_name,$last_name,$age_5k_10k,$gender,$email_address,$price" >> "$roster_file"
+    echo "You have successfully registered for the $race_type race!"
+    echo "Registration details saved in: $roster_file"
+else
+    echo "You cannot register at this time."
+fi

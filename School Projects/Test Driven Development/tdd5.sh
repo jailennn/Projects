@@ -203,54 +203,57 @@ while true; do
     echo "3) Half Marathon"
     echo "4) Full Marathon"
     echo "You can register for one K race (5K or 10K) and one marathon (Half or Full Marathon)."
+    echo "Please enter your choices separated by spaces (e.g., '1 3'):"
 
-    read -p "Enter your choice (1-4): " race
+    read -p "Enter your choices (1-4): " -a race_choices
 
-    case $race in
-        1)
-            if [ -z "$selected_k_race" ]; then
-                selected_k_race="5K"
-                race_price=$k_race_price
-            else
-                echo "You can only select one K race."
-                continue 2  # exit the loop and prompt again
-            fi
-            ;;
-        2)
-            if [ -z "$selected_k_race" ]; then
-                selected_k_race="10K"
-                race_price=$ten_k_price
-            else
-                echo "You can only select one K race."
-                continue 2
-            fi
-            ;;
-        3)
-            if [ -z "$selected_marathon" ]; then
-                selected_marathon="Half Marathon"
-                race_price=$marathon_price
-            else
-                echo "You can only select one marathon."
-                continue 2
-            fi
-            ;;
-        4)
-            if [ -z "$selected_marathon" ]; then
-                selected_marathon="Full Marathon"
-                race_price=$full_marathon_price
-            else
-                echo "You can only select one marathon."
-                continue 2
-            fi
-            ;;
-        *)
-            echo "Invalid selection: $race"
-            continue 2  # Invalid selection, restart the loop
-            ;;
-    esac
+    for race in "${race_choices[@]}"; do
+        case $race in
+            1)
+                if [ -z "$selected_k_race" ]; then
+                    selected_k_race="5K"
+                    race_price=$k_race_price
+                else
+                    echo "You can only select one K race. Ignoring additional selection."
+                fi
+                ;;
+            2)
+                if [ -z "$selected_k_race" ]; then
+                    selected_k_race="10K"
+                    race_price=$ten_k_price
+                else
+                    echo "You can only select one K race. Ignoring additional selection."
+                fi
+                ;;
+            3)
+                if [ -z "$selected_marathon" ]; then
+                    selected_marathon="Half Marathon"
+                    race_price=$marathon_price
+                else
+                    echo "You can only select one marathon. Ignoring additional selection."
+                fi
+                ;;
+            4)
+                if [ -z "$selected_marathon" ]; then
+                    selected_marathon="Full Marathon"
+                    race_price=$full_marathon_price
+                else
+                    echo "You can only select one marathon. Ignoring additional selection."
+                fi
+                ;;
+            *)
+                echo "Invalid selection: $race"
+                continue 2  # Invalid selection, restart the loop
+                ;;
+        esac
+    done
 
     # Break the loop if selections are valid
-    break
+    if [[ -n "$selected_k_race" || -n "$selected_marathon" ]]; then
+        break
+    else
+        echo "You must select at least one race."
+    fi
 done
 
 # Save registration details to the appropriate roster file

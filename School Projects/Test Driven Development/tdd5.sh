@@ -251,11 +251,11 @@ echo "Total Price: \$$total_price"
 
 # Save the registration details to the appropriate race roster
 if [ -n "$selected_k_race" ]; then
-    echo "$first_name,$last_name,$gender,$email_address,$age_5k_10k,$input_timestamp,$total_price" >> "$roster_directory/${selected_k_race}_Roster.csv"
+    echo "$first_name,$last_name,$gender,$email_address,$age_5k_10k,$input_timestamp,\$$total_price" >> "$roster_directory/${selected_k_race}_Roster.csv"
 fi
 
 if [ -n "$selected_marathon" ]; then
-    echo "$first_name,$last_name,$gender,$email_address,$age_full_half,$input_timestamp,$total_price" >> "$roster_directory/${selected_marathon// /_}_Roster.csv"
+    echo "$first_name,$last_name,$gender,$email_address,$age_full_half,$input_timestamp,\$$total_price" >> "$roster_directory/${selected_marathon// /_}_Roster.csv"
 fi
 
 echo "Registration complete! Thank you for signing up."

@@ -256,12 +256,12 @@ done
 # Save registration details to the appropriate roster file
 if [ "$selected_k_race" ]; then
     roster_file="$roster_directory/${selected_k_race}_Roster.csv"
-    echo "$first_name,$last_name,$gender,$email_address,$age_5k_10k,$input_timestamp,$race_price" >> "$roster_file"
+    echo "$first_name,$last_name,$gender,$email_address,$age_5k_10k,$input_timestamp,\$$race_price" >> "$roster_file"
     echo "Registered for the $selected_k_race race."
 fi
 
 if [ "$selected_marathon" ]; then
     roster_file="$roster_directory/${selected_marathon}_Roster.csv"
-    echo "$first_name,$last_name,$gender,$email_address,$age_full_half,$input_timestamp,$race_price" >> "$roster_file"
+    echo "$first_name,$last_name,$gender,$email_address,$age_full_half,$input_timestamp,\$$race_price" >> "$roster_file"
     echo "Registered for the $selected_marathon race."
 fi

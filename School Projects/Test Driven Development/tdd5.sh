@@ -136,7 +136,7 @@ race_day_full_half=$(date -d "$(echo $TDay | cut -d' ' -f1) + 3 days" +%Y%m%d)
 age_5k_10k=$(calculate_age "$dob" "$race_day_5k_10k")
 age_full_half=$(calculate_age "$dob" "$race_day_full_half")
 
-echo "The runner's age on 5K/10K race day ($race_day_5k_10k) will be: $age_5k_10k years."
+echo "The runner's age on 5K/10K race day ($race_day_5k_10k) will be: $age_5k_10_k years."
 echo "The runner's age on full/half marathon race day ($race_day_full_half) will be: $age_full_half years."
 
 # Collect additional user information for the race roster
@@ -209,7 +209,7 @@ while true; do
                 if [ -z "$selected_marathon" ]; then
                     selected_marathon="Half Marathon"
                 else
-                    echo "You can only select one marathon (Half or Full)."
+                    echo "You can only select one marathon (Half or Full Marathon)."
                 fi
                 ;;
 
@@ -217,49 +217,75 @@ while true; do
                 if [ -z "$selected_marathon" ]; then
                     selected_marathon="Full Marathon"
                 else
-                    echo "You can only select one marathon (Half or Full)."
+                    echo "You can only select one marathon (Half or Full Marathon)."
                 fi
                 ;;
             *)
-                echo "Invalid selection. Please try again."
-                continue  # Skip to the next loop iteration
+                echo "Invalid selection, please choose again."
                 ;;
         esac
     done
 
-    if [ -n "$selected_k_race" ] || [ -n "$selected_marathon" ]; then
-        break  # Exit the loop if at least one race has been selected
+    # Check if valid selections have been made
+    if [ -n "$selected_k_race" ] && [ -n "$selected_marathon" ]; then
+        echo "You have selected the following races:"
+        echo "K Race: $selected_k_race"
+        echo "Marathon: $selected_marathon"
+        break
+    elif [ -n "$selected_k_race" ]; then
+        echo "You have selected the K Race: $selected_k_race"
+        break
     else
-        echo "Please select at least one race."
+        echo "No valid race selected, please try again."
     fi
 done
 
-# Determine the price based on the race selected
+# Price Calculation based on age and race selection
 price=0
-if [ -n "$selected_k_race" ]; then
-    price=$((price + 30))  # K race price
-fi
-if [ -n "$selected_marathon" ]; then
-    price=$((price + 60))  # Marathon price
-fi
 
-# Log registration details to appropriate files
-timestamp=$(date -d "$input_timestamp" +%Y%m%d_%H%M%S)
-
-if [ -n "$selected_k_race" ]; then
-    roster_file="5K_Roster.csv"
-    if [ "$selected_k_race" == "10K" ]; then
-        roster_file="10K_Roster.csv"
+if [ "$selected_k_race" == "5K" ]; then
+    if [ "$age_5k_10k" -lt 18 ]; then
+        price=10  # Youth price
+    elif [ "$age_5k_10k" -le 60 ]; then
+        price=20  # Adult price
+    else
+        price=15  # Senior price
     fi
-    echo "$first_name,$last_name,$gender,$email_address,$age_5k_10k,$timestamp,$price" >> "$roster_directory/$roster_file"
+elif [ "$selected_k_race" == "10K" ]; then
+    if [ "$age_5k_10k" -lt 18 ]; then
+        price=15  # Youth price
+    elif [ "$age_5k_10k" -le 60 ]; then
+        price=25  # Adult price
+    else
+        price=20  # Senior price
+    fi
+elif [ "$selected_marathon" == "Half Marathon" ]; then
+    if [ "$age_full_half" -lt 18 ]; then
+        price=25  # Youth price
+    elif [ "$age_full_half" -le 60 ]; then
+        price=40  # Adult price
+    else
+        price=30  # Senior price
+    fi
+elif [ "$selected_marathon" == "Full Marathon" ]; then
+    if [ "$age_full_half" -lt 18 ]; then
+        price=30  # Youth price
+    elif [ "$age_full_half" -le 60 ]; then
+        price=50  # Adult price
+    else
+        price=40  # Senior price
+    fi
+fi
+
+# Log registration details into respective rosters
+if [ -n "$selected_k_race" ]; then
+    echo "$first_name,$last_name,$gender,$email_address,$age_5k_10k,$input_timestamp,$price" >> "$roster_directory/5K_Roster.csv"
+    echo "$first_name,$last_name,$gender,$email_address,$age_5k_10k,$input_timestamp,$price" >> "$roster_directory/10K_Roster.csv"
 fi
 
 if [ -n "$selected_marathon" ]; then
-    roster_file="Half_Marathon_Roster.csv"
-    if [ "$selected_marathon" == "Full Marathon" ]; then
-        roster_file="Full_Marathon_Roster.csv"
-    fi
-    echo "$first_name,$last_name,$gender,$email_address,$age_full_half,$timestamp,$price" >> "$roster_directory/$roster_file"
+    echo "$first_name,$last_name,$gender,$email_address,$age_full_half,$input_timestamp,$price" >> "$roster_directory/Half_Marathon_Roster.csv"
+    echo "$first_name,$last_name,$gender,$email_address,$age_full_half,$input_timestamp,$price" >> "$roster_directory/Full_Marathon_Roster.csv"
 fi
 
-echo "Registration successful! Thank you for registering."
+echo "Registration successful! Your total price is: \$$price"

@@ -1,4 +1,4 @@
-# Jailen's Personal Projects Repository  
+# Jailen's Personal Projects Repository
 
 Welcome to my personal GitHub repository! This space is a collection of my work, featuring both academic projects and professional development efforts. The repository serves as a showcase of my learning journey and as a working environment for future career projects.
 
